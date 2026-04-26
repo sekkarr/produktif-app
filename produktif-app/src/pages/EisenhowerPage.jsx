@@ -5,16 +5,21 @@ export default function EisenhowerPage() {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("urgent-important");
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
     const saved = localStorage.getItem("notes");
     if (saved) {
       setNotes(JSON.parse(saved));
     }
+    setIsLoaded(true); // sudah load
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("notes", JSON.stringify(notes));
-  }, [notes]);
+    if (isLoaded) {
+      localStorage.setItem("notes", JSON.stringify(notes));
+    }
+  }, [notes, isLoaded]);
 
   const handleAdd = () => {
     if (!title) return;
