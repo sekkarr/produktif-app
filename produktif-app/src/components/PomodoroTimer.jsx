@@ -44,31 +44,97 @@ export default function PomodoroTimer() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  return (
-    <div style={{ textAlign: "center" }}>
-      <h1>
+return (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+      background: "#f5f7fb",
+    }}
+  >
+    <div
+      style={{
+        background: "white",
+        padding: "30px",
+        borderRadius: "16px",
+        width: "320px",
+        textAlign: "center",
+        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h2 style={{ marginBottom: "10px", color: "#555" }}>
         {mode === "focus"
           ? "Focus Time"
           : mode === "shortBreak"
-            ? "Short Break"
-            : "Long Break"}
+          ? "Short Break"
+          : "Long Break"}
+      </h2>
+
+      <h1 style={{ fontSize: "56px", marginBottom: "20px" }}>
+        {formatTime(timeLeft)}
       </h1>
 
-      <h2 style={{ fontSize: "48px" }}>{formatTime(timeLeft)}</h2>
-
-      {/* button */}
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => switchMode("focus")}>Focus</button>
-        <button onClick={() => switchMode("shortBreak")}>Break</button>
-        <button onClick={() => switchMode("longBreak")}>Long Break</button>
+      {/* Mode Button */}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+        {["focus", "shortBreak", "longBreak"].map((m) => (
+          <button
+            key={m}
+            onClick={() => switchMode(m)}
+            style={{
+              flex: 1,
+              padding: "8px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              background:
+                mode === m ? "#4f46e5" : "#e5e7eb",
+              color: mode === m ? "white" : "#333",
+            }}
+          >
+            {m === "focus"
+              ? "Focus"
+              : m === "shortBreak"
+              ? "Break"
+              : "Long Break"}
+          </button>
+        ))}
       </div>
 
-      {/* control */}
-      <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-        <button onClick={toggleTimer}>{isRunning ? "Pause" : "Start"}</button>
+      {/* Control */}
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button
+          onClick={toggleTimer}
+          style={{
+            flex: 1,
+            padding: "10px",
+            borderRadius: "10px",
+            border: "none",
+            background: "#10b981",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          {isRunning ? "Pause" : "Start"}
+        </button>
 
-        <button onClick={resetTimer}>Reset</button>
+        <button
+          onClick={resetTimer}
+          style={{
+            flex: 1,
+            padding: "10px",
+            borderRadius: "10px",
+            border: "none",
+            background: "#ef4444",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          Reset
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 }
