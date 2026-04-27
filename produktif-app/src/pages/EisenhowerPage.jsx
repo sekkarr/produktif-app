@@ -55,7 +55,10 @@ export default function EisenhowerPage() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Eisenhower Matrix</h1>
+      <h1>
+        Eisenhower Matrix (-pop up add notes, drag notes, fitur bookmark, fitur
+        checklist, alert delete)
+      </h1>
 
       {/* inputan */}
       <div
@@ -70,7 +73,7 @@ export default function EisenhowerPage() {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Tuliskan catatan ... "
+          placeholder="Tuliskan catatan"
           style={{
             padding: "8px 10px",
             borderRadius: "8px",
@@ -169,7 +172,7 @@ function Box({ title, items, deleteNote }) {
       <h3 style={{ marginBottom: "10px" }}>{title}</h3>
 
       {items.length === 0 ? (
-        <p style={{ color: "#777" }}>Kosong</p>
+        <p style={{ color: "#777" }}>-</p>
       ) : (
         items.map((item) => (
           <div
@@ -184,7 +187,7 @@ function Box({ title, items, deleteNote }) {
               alignItems: "center",
             }}
           >
-            <span>- {item.title}</span>
+            <span> {item.title}</span>
             <button
               onClick={() => deleteNote(item.id)}
               style={{

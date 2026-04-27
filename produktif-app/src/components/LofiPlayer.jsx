@@ -19,31 +19,27 @@ export default function LofiPlayer() {
   return (
     <div
       style={{
-        maxWidth: "400px",
-        margin: "50px auto",
-        padding: "20px",
+        background: "white",
+        padding: "30px",
         borderRadius: "16px",
-        background: "linear-gradient(135deg, #a18cd1, #fbc2eb)",
-        color: "white",
+        width: "320px",
         textAlign: "center",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
       }}
     >
-      <h2 style={{ marginBottom: "10px" }}>🎧 Lofi Player</h2>
+      <h2 style={{ marginBottom: "10px", color: "#555" }}>Lofi Player</h2>
 
-      <p style={{ fontSize: "14px", opacity: 0.9 }}>
-        Focus / Study Music
-      </p>
+      <p style={{ fontSize: "14px", color: "#888" }}>Focus / Study Music</p>
 
       <div
         style={{
           margin: "20px 0",
           padding: "15px",
           borderRadius: "12px",
-          background: "rgba(255,255,255,0.2)",
+          background: "#f3f4f6",
         }}
       >
-        🎵 Chill Lofi - Study Beats
+        Chill Lofi - Study Beats
       </div>
 
       <button
@@ -52,14 +48,18 @@ export default function LofiPlayer() {
           padding: "10px 20px",
           borderRadius: "10px",
           border: "none",
+          background: "#4f46e5",
+          color: "white",
           cursor: "pointer",
-          fontSize: "16px",
         }}
       >
         {isPlaying ? "Pause ⏸" : "Play ▶"}
       </button>
 
-      <audio ref={audioRef} src="/lofi-songs/Bliss for Relaxation & Focus.mp3" />
+      <audio
+        ref={audioRef}
+        src="/lofi-songs/Bliss for Relaxation & Focus.mp3"
+      />
     </div>
   );
 }

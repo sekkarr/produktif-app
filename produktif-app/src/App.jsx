@@ -3,8 +3,7 @@ import Navbar from "./components/Navbar";
 
 import Dashboard from "./pages/Dashboard";
 import EisenhowerPage from "./pages/EisenhowerPage";
-import LofiPage from "./pages/LofiPage";
-import PomodoroPage from "./pages/PomodoroPage";
+import FokusMode from "./pages/FokusMode";
 
 
 function App() {
@@ -15,8 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/eisenhower" element={<EisenhowerPage />} />
-        <Route path="/pomodoro" element={<PomodoroPage />} />
-        <Route path="/lofi" element={<LofiPage />} />
+        <Route path="/fokus-mode" element={<FokusMode/>} />
       </Routes>
     </div>
   );
