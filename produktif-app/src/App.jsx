@@ -5,7 +5,6 @@ import Dashboard from "./pages/Dashboard";
 import EisenhowerPage from "./pages/EisenhowerPage";
 import FokusMode from "./pages/FokusMode";
 
-
 function App() {
   return (
     <div>
@@ -14,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/eisenhower" element={<EisenhowerPage />} />
-        <Route path="/fokus-mode" element={<FokusMode/>} />
+        <Route path="/fokus-mode" element={<FokusMode />} />
       </Routes>
     </div>
   );
