@@ -45,99 +45,66 @@ export default function PomodoroTimer() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          padding: "30px",
-          borderRadius: "16px",
-          width: "320px",
-          textAlign: "center",
-          boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{ marginBottom: "10px", color: "#555" }}>
-          {mode === "focus"
-            ? "Pomodoro Timer"
-            : mode === "shortBreak"
-              ? "Short Break"
+  <div className="flex justify-center items-center">
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-xl w-full max-w-sm text-center">
+
+      {/* TITLE */}
+      <h2 className="text-xl font-semibold mb-2 text-gray-200">
+        {mode === "focus"
+          ? "Focus Time"
+          : mode === "shortBreak"
+          ? "Short Break"
+          : "Long Break"}
+      </h2>
+
+      {/* TIMER */}
+      <h1 className="text-5xl font-bold mb-6">
+        {formatTime(timeLeft)}
+      </h1>
+
+      {/* MODE BUTTONS */}
+      <div className="flex gap-2 mb-6">
+        {["focus", "shortBreak", "longBreak"].map((m) => (
+          <button
+            key={m}
+            onClick={() => switchMode(m)}
+            disabled={isRunning}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition
+              ${
+                mode === m
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }
+              ${isRunning ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"}
+            `}
+          >
+            {m === "focus"
+              ? "Focus"
+              : m === "shortBreak"
+              ? "Break"
               : "Long Break"}
-        </h2>
-
-        <h1 style={{ fontSize: "56px", marginBottom: "20px" }}>
-          {formatTime(timeLeft)}
-        </h1>
-
-        {/* Mode Button */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-          {["focus", "shortBreak", "longBreak"].map((m) => (
-            <button
-              key={m}
-              onClick={() => switchMode(m)}
-              disabled={isRunning}
-              style={{
-                flex: 1,
-                padding: "8px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: isRunning ? "not-allowed" : "pointer",
-                background: isRunning
-                  ? "#d1d5db"
-                  : mode === m
-                    ? "#4f46e5"
-                    : "#e5e7eb",
-                color: mode === m && !isRunning ? "white" : "#333",
-                opacity: isRunning ? 0.6 : 1,
-              }}
-            >
-              {m === "focus"
-                ? "Focus"
-                : m === "shortBreak"
-                  ? "Break"
-                  : "Long Break"}
-            </button>
-          ))}
-        </div>
-
-        {/* Control */}
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            onClick={toggleTimer}
-            style={{
-              flex: 1,
-              padding: "10px",
-              borderRadius: "10px",
-              border: "none",
-              background: "#10b981",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            {isRunning ? "Pause" : "Start"}
           </button>
-
-          <button
-            onClick={resetTimer}
-            style={{
-              flex: 1,
-              padding: "10px",
-              borderRadius: "10px",
-              border: "none",
-              background: "#ef4444",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            Reset
-          </button>
-        </div>
+        ))}
       </div>
+
+      {/* CONTROL BUTTONS */}
+      <div className="flex gap-3">
+        <button
+          onClick={toggleTimer}
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-medium"
+        >
+          {isRunning ? "Pause" : "Start"}
+        </button>
+
+        <button
+          onClick={resetTimer}
+          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium"
+        >
+          Reset
+        </button>
+      </div>
+
     </div>
-  );
+  </div>
+);
 }

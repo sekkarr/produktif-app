@@ -16,50 +16,32 @@ export default function LofiPlayer() {
     setIsPlaying(!isPlaying);
   };
 
-  return (
-    <div
-      style={{
-        background: "white",
-        padding: "30px",
-        borderRadius: "16px",
-        width: "320px",
-        textAlign: "center",
-        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h2 style={{ marginBottom: "10px", color: "#555" }}>Lofi Player</h2>
+ return (
+  <div className="flex justify-center items-center">
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-xl w-full max-w-sm text-center">
 
-      <p style={{ fontSize: "14px", color: "#888" }}>Focus / Study Music</p>
+      {/* TITLE */}
+      <h2 className="text-xl font-semibold mb-2 text-gray-200">
+        Lofi Player
+      </h2>
 
-      <div
-        style={{
-          margin: "20px 0",
-          padding: "15px",
-          borderRadius: "12px",
-          background: "#f3f4f6",
-        }}
-      >
+      <p className="text-sm text-gray-500 mb-4">
+        Focus / Study Music
+      </p>
+
+      {/* DISPLAY AREA */}
+      <div className="bg-gradient-to-r from-purple-800 to-blue-400 text-white p-4 rounded-xl mb-6">
         Chill Lofi - Study Beats
       </div>
 
       <button
         onClick={togglePlay}
-        style={{
-          padding: "10px 20px",
-          borderRadius: "10px",
-          border: "none",
-          background: "#4f46e5",
-          color: "white",
-          cursor: "pointer",
-        }}
+        className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition"
       >
         {isPlaying ? "Pause ⏸" : "Play ▶"}
       </button>
 
-      <audio
-        ref={audioRef}
-        src="/lofi-songs/Bliss for Relaxation & Focus.mp3"
-      />
     </div>
-  );
+  </div>
+);
 }
