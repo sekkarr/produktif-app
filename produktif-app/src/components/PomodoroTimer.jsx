@@ -48,7 +48,6 @@ export default function PomodoroTimer() {
   <div className="flex justify-center items-center">
     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-xl w-full max-w-sm text-center">
 
-      {/* TITLE */}
       <h2 className="text-xl font-semibold mb-2 text-gray-200">
         {mode === "focus"
           ? "Focus Time"
