@@ -7,7 +7,7 @@ export default function FokusMode() {
 
       {/* HEADER */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-800">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-400">
           Focus Mode
         </h1>
         <p className="text-gray-500 mt-2">
