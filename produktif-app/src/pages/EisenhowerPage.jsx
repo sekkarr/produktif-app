@@ -1,208 +1,227 @@
 import { useState, useEffect } from "react";
+import AddNote from "../components/AddNotes";
 
 export default function EisenhowerPage() {
   const [notes, setNotes] = useState([]);
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState("urgent-important");
-
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // LOAD LOCAL STORAGE
   useEffect(() => {
     const saved = localStorage.getItem("notes");
+
     if (saved) {
       setNotes(JSON.parse(saved));
     }
-    setIsLoaded(true); // sudah load
+
+    setIsLoaded(true);
   }, []);
 
+  // SAVE LOCAL STORAGE
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("notes", JSON.stringify(notes));
     }
   }, [notes, isLoaded]);
 
-  const handleAdd = () => {
-    if (!title) return;
-
-    const newNote = {
-      id: Date.now(),
-      title,
-      priority,
-    };
-
+  // ADD NOTE
+  const handleAdd = (newNote) => {
     setNotes((prev) => [newNote, ...prev]);
-    setTitle("");
   };
 
-  //delete
+  // DELETE NOTE
   const deleteNote = (id) => {
     setNotes(notes.filter((note) => note.id !== id));
   };
 
-  // kuadran
+  // GROUP QUADRANTS
   const grouped = {
     "urgent-important": notes.filter((n) => n.priority === "urgent-important"),
+
     "not-urgent-important": notes.filter(
       (n) => n.priority === "not-urgent-important",
     ),
+
     "urgent-not-important": notes.filter(
       (n) => n.priority === "urgent-not-important",
     ),
+
     "not-urgent-not-important": notes.filter(
       (n) => n.priority === "not-urgent-not-important",
     ),
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>
-        Eisenhower Matrix (-pop up add notes, drag notes, fitur bookmark, fitur
-        checklist, alert delete)
-      </h1>
+    <div className="min-h-screen px-6 py-10 text-white">
+      {/* HEADER */}
+      <div className="max-w-7xl mx-auto mb-10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Eisenhower Matrix</h1>
 
-      {/* inputan */}
-      <div
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Tuliskan catatan"
-          style={{
-            padding: "8px 10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            flex: "1",
-            minWidth: "200px",
-          }}
-        />
+            <p className="text-gray-300">
+              Organize tasks based on urgency and importance
+            </p>
+          </div>
 
-        <select
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="urgent-important">Urgent & Important</option>
-          <option value="not-urgent-important">Not Urgent & Important</option>
-          <option value="urgent-not-important">Urgent & Not Important</option>
-          <option value="not-urgent-not-important">
-            Not Urgent & Not Important
-          </option>
-        </select>
-
-        <button
-          onClick={handleAdd}
-          style={{
-            padding: "8px 12px",
-            borderRadius: "8px",
-            border: "none",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          Tambah
-        </button>
+          {/* BUTTON */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="
+              bg-indigo-600 hover:bg-indigo-700
+              transition
+              px-5 py-3
+              rounded-xl
+              font-medium
+              shadow-lg
+            "
+          >
+            + Add Note
+          </button>
+        </div>
       </div>
 
-      {/* grid */}
+      {/* MODAL */}
+      {isModalOpen && (
+        <AddNote
+          onClose={() => setIsModalOpen(false)}
+          onSave={(note) => {
+            handleAdd(note);
+            setIsModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* GRID */}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "20px",
-          marginTop: "20px",
-        }}
+        className="
+        max-w-7xl mx-auto
+        grid grid-cols-1 md:grid-cols-2
+        gap-6
+      "
       >
         <Box
           title="Do Now"
+          subtitle="Urgent & Important"
           items={grouped["urgent-important"]}
           deleteNote={deleteNote}
+          color="from-red-500/20 to-pink-500/20"
         />
+
         <Box
           title="Schedule"
+          subtitle="Not Urgent & Important"
           items={grouped["not-urgent-important"]}
           deleteNote={deleteNote}
+          color="from-blue-500/20 to-cyan-500/20"
         />
+
         <Box
           title="Delegate"
+          subtitle="Urgent & Not Important"
           items={grouped["urgent-not-important"]}
           deleteNote={deleteNote}
+          color="from-yellow-500/20 to-orange-500/20"
         />
+
         <Box
           title="Delete"
+          subtitle="Not Urgent & Not Important"
           items={grouped["not-urgent-not-important"]}
           deleteNote={deleteNote}
+          color="from-gray-500/20 to-slate-500/20"
         />
       </div>
     </div>
   );
 }
 
-// COMPONENT BOX
-function Box({ title, items, deleteNote }) {
-  const getColor = () => {
-    if (title === "Do Now") return "#ffdddd"; // merah muda
-    if (title === "Schedule") return "#ddeaff"; // biru
-    if (title === "Delegate") return "#fff4cc"; // kuning
-    if (title === "Delete") return "#eeeeee"; // abu
-  };
+/* ========================= */
+/* BOX COMPONENT */
+/* ========================= */
 
+function Box({ title, subtitle, items, deleteNote, color }) {
   return (
     <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "12px",
-        padding: "10px",
-        minHeight: "150px",
-        backgroundColor: getColor(),
-        boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-      }}
+      className={`
+        bg-gradient-to-br ${color}
+        backdrop-blur-md
+        border border-white/10
+        rounded-2xl
+        p-5
+        shadow-xl
+        min-h-[300px]
+      `}
     >
-      <h3 style={{ marginBottom: "10px" }}>{title}</h3>
+      {/* HEADER */}
+      <div className="mb-5">
+        <h2 className="text-2xl font-semibold mb-1">{title}</h2>
 
+        <p className="text-sm text-gray-300">{subtitle}</p>
+      </div>
+
+      {/* EMPTY */}
       {items.length === 0 ? (
-        <p style={{ color: "#777" }}>-</p>
+        <div
+          className="
+          border border-dashed border-white/10
+          rounded-xl
+          py-10
+          text-center
+          text-gray-400
+        "
+        >
+          No notes yet
+        </div>
       ) : (
-        items.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              background: "white",
-              padding: "8px",
-              borderRadius: "6px",
-              marginBottom: "8px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span> {item.title}</span>
-            <button
-              onClick={() => deleteNote(item.id)}
-              style={{
-                border: "none",
-                background: "red",
-                color: "white",
-                borderRadius: "5px",
-                cursor: "pointer",
-                padding: "4px 8px",
-              }}
+        <div className="space-y-4">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="
+                bg-white/10
+                border border-white/10
+                backdrop-blur-md
+                rounded-xl
+                p-4
+                shadow-lg
+              "
             >
-              Hapus
-            </button>
-          </div>
-        ))
+              {/* TITLE */}
+              <div className="flex justify-between items-start gap-3">
+                <div>
+                  <h3 className="font-semibold text-lg">{item.title}</h3>
+
+                  <h3 className="text-sm  text-lg">{item.content}</h3>
+
+                  {/* DEADLINE */}
+                  <p className="text-sm text-gray-300 mt-1">
+                    Deadline: {item.deadline}
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <p className="text-xs text-gray-400">{item.date}</p>
+    
+                <button
+                  onClick={() => deleteNote(item.id)}
+                  className="
+                    bg-red-500/80 hover:bg-red-600
+                    transition
+                    px-3 py-1
+                    rounded-lg
+                    text-sm
+                  "
+                >
+                  Delete
+                </button>
+                </div>
+
+                
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

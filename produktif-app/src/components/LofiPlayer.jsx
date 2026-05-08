@@ -74,6 +74,7 @@ export default function LofiPlayer() {
           src={songs[currentSong]}
           loop
         />
+        
 
         {/* CONTROLS */}
         <div className="flex justify-between items-center mb-4">
