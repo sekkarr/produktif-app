@@ -5,6 +5,10 @@ export default function EisenhowerPage() {
   const [notes, setNotes] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [toast, setToast] = useState("");
 
   // LOAD LOCAL STORAGE
   useEffect(() => {
@@ -24,14 +28,48 @@ export default function EisenhowerPage() {
     }
   }, [notes, isLoaded]);
 
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   // ADD NOTE
   const handleAdd = (newNote) => {
-    setNotes((prev) => [newNote, ...prev]);
-  };
+    if (isEditing) {
+      const updatedNotes = notes.map((note) =>
+        note.id === editingNote.id ? { ...note, ...newNote } : note,
+      );
 
+      setNotes(updatedNotes);
+      setToast("Note updated successfully!");
+
+      setIsEditing(false);
+      setEditingNote(null);
+    } else {
+      setNotes((prev) => [newNote, ...prev]);
+      setToast("Note saved successfully!");
+    }
+  };
   // DELETE NOTE
   const deleteNote = (id) => {
-    setNotes(notes.filter((note) => note.id !== id));
+    setConfirmDelete(id);
+  };
+
+  const confirmDeleteNote = () => {
+    setNotes(notes.filter((note) => note.id !== confirmDelete));
+    setToast("Note deleted!");
+    setConfirmDelete(null);
+  };
+
+  const handleEdit = (note) => {
+    setEditingNote(note);
+    setIsEditing(true);
+    setIsModalOpen(true);
   };
 
   // GROUP QUADRANTS
@@ -84,14 +122,65 @@ export default function EisenhowerPage() {
       {/* MODAL */}
       {isModalOpen && (
         <AddNote
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            setIsEditing(false);
+            setEditingNote(null);
+          }}
           onSave={(note) => {
             handleAdd(note);
             setIsModalOpen(false);
           }}
+          editData={editingNote}
+          isEditing={isEditing}
         />
       )}
 
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-sm text-white shadow-2xl">
+            <h2 className="text-xl font-semibold mb-3">Delete Note?</h2>
+
+            <p className="text-gray-300 text-sm mb-6">
+              This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDeleteNote}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div
+          className="
+      fixed top-5 right-5
+      bg-white/10 backdrop-blur-md
+      border border-white/20
+      text-white
+      px-5 py-3
+      rounded-xl
+      shadow-2xl
+      z-50
+      animate-pulse
+    "
+        >
+          {toast}
+        </div>
+      )}
       {/* GRID */}
       <div
         className="
@@ -105,6 +194,7 @@ export default function EisenhowerPage() {
           subtitle="Urgent & Important"
           items={grouped["urgent-important"]}
           deleteNote={deleteNote}
+          handleEdit={handleEdit}
           color="from-red-500/20 to-pink-500/20"
         />
 
@@ -113,6 +203,7 @@ export default function EisenhowerPage() {
           subtitle="Not Urgent & Important"
           items={grouped["not-urgent-important"]}
           deleteNote={deleteNote}
+          handleEdit={handleEdit}
           color="from-blue-500/20 to-cyan-500/20"
         />
 
@@ -121,6 +212,7 @@ export default function EisenhowerPage() {
           subtitle="Urgent & Not Important"
           items={grouped["urgent-not-important"]}
           deleteNote={deleteNote}
+          handleEdit={handleEdit}
           color="from-yellow-500/20 to-orange-500/20"
         />
 
@@ -129,6 +221,7 @@ export default function EisenhowerPage() {
           subtitle="Not Urgent & Not Important"
           items={grouped["not-urgent-not-important"]}
           deleteNote={deleteNote}
+          handleEdit={handleEdit}
           color="from-gray-500/20 to-slate-500/20"
         />
       </div>
@@ -140,7 +233,7 @@ export default function EisenhowerPage() {
 /* BOX COMPONENT */
 /* ========================= */
 
-function Box({ title, subtitle, items, deleteNote, color }) {
+function Box({ title, subtitle, items, deleteNote, handleEdit, color }) {
   return (
     <div
       className={`
@@ -202,22 +295,32 @@ function Box({ title, subtitle, items, deleteNote, color }) {
 
                 <div className="flex flex-col items-end gap-2">
                   <p className="text-xs text-gray-400">{item.date}</p>
-    
-                <button
-                  onClick={() => deleteNote(item.id)}
-                  className="
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="
+      bg-blue-500/80 hover:bg-blue-600
+      transition
+      px-3 py-1
+      rounded-lg
+      text-sm
+    "
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => deleteNote(item.id)}
+                    className="
                     bg-red-500/80 hover:bg-red-600
                     transition
                     px-3 py-1
                     rounded-lg
                     text-sm
                   "
-                >
-                  Delete
-                </button>
+                  >
+                    Delete
+                  </button>
                 </div>
-
-                
               </div>
             </div>
           ))}

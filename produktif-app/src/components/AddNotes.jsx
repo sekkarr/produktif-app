@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function AddNote({ onClose, onSave }) {
+export default function AddNote({ onClose, onSave, editData }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [priority, setPriority] = useState("urgent-important");
@@ -8,23 +8,40 @@ export default function AddNote({ onClose, onSave }) {
 
   const currentDate = new Date().toLocaleDateString();
 
+  // SYNC DATA SAAT EDIT
+  useEffect(() => {
+    if (editData) {
+      setTitle(editData.title || "");
+      setContent(editData.content || "");
+      setPriority(editData.priority || "urgent-important");
+      setDeadline(editData.deadline || "");
+    } else {
+      // reset kalau buka mode create
+      setTitle("");
+      setContent("");
+      setPriority("urgent-important");
+      setDeadline("");
+    }
+  }, [editData]);
+
   const handleSave = () => {
     if (!title || !content) return;
 
     const newNote = {
-      id: Date.now(),
+      id: editData?.id || Date.now(),
       title,
       deadline,
       content,
       priority,
-      date: currentDate,
+      date: editData?.date || currentDate,
     };
 
     onSave(newNote);
 
+    // reset setelah save
     setTitle("");
     setContent("");
-    setPriority("");
+    setPriority("urgent-important");
     setDeadline("");
 
     onClose();
@@ -32,21 +49,30 @@ export default function AddNote({ onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+      
       {/* MODAL */}
       <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-md shadow-2xl text-white">
+
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Add Note</h2>
+          <h2 className="text-2xl font-semibold">
+            {editData ? "Edit Note" : "Add Note"}
+          </h2>
 
-          <button onClick={onClose} className="text-gray-300 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-300 hover:text-white"
+          >
             ✕
           </button>
         </div>
 
         {/* DATE */}
-        <p className="text-sm text-gray-300 mb-4">Date: {currentDate}</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Date: {currentDate}
+        </p>
 
-        {/* TITLE INPUT */}
+        {/* TITLE */}
         <input
           type="text"
           placeholder="Note title..."
@@ -55,6 +81,7 @@ export default function AddNote({ onClose, onSave }) {
           className="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none"
         />
 
+        {/* DEADLINE */}
         <p className="text-sm text-gray-300 mb-2">Deadline</p>
         <input
           type="date"
@@ -63,6 +90,7 @@ export default function AddNote({ onClose, onSave }) {
           className="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 text-gray-300 focus:outline-none"
         />
 
+        {/* PRIORITY */}
         <div className="mb-4 text-left">
           <p className="text-sm text-gray-300 mb-2">Category</p>
 
@@ -71,11 +99,17 @@ export default function AddNote({ onClose, onSave }) {
             onChange={(e) => setPriority(e.target.value)}
             className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-gray-300 focus:outline-none"
           >
-            <option value="urgent-important">Important & Urgent</option>
+            <option value="urgent-important">
+              Important & Urgent
+            </option>
 
-            <option value="not-urgent-important">Important & Not Urgent</option>
+            <option value="not-urgent-important">
+              Important & Not Urgent
+            </option>
 
-            <option value="urgent-not-important">Not Important & Urgent</option>
+            <option value="urgent-not-important">
+              Not Important & Urgent
+            </option>
 
             <option value="not-urgent-not-important">
               Not Important & Not Urgent
@@ -94,6 +128,7 @@ export default function AddNote({ onClose, onSave }) {
 
         {/* BUTTONS */}
         <div className="flex justify-end gap-3">
+
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
@@ -107,6 +142,7 @@ export default function AddNote({ onClose, onSave }) {
           >
             Save
           </button>
+
         </div>
       </div>
     </div>
