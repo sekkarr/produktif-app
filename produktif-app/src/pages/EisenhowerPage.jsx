@@ -9,6 +9,7 @@ export default function EisenhowerPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [toast, setToast] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // LOAD LOCAL STORAGE
   useEffect(() => {
@@ -72,21 +73,64 @@ export default function EisenhowerPage() {
     setIsModalOpen(true);
   };
 
+  const filteredNotes = notes.filter((note) => {
+    const keyword = searchTerm.toLowerCase();
+
+    return (
+      note.title.toLowerCase().includes(keyword) ||
+      note.content.toLowerCase().includes(keyword)
+    );
+  });
   // GROUP QUADRANTS
   const grouped = {
-    "urgent-important": notes.filter((n) => n.priority === "urgent-important"),
+    "urgent-important": filteredNotes.filter(
+      (n) => n.priority === "urgent-important",
+    ),
 
-    "not-urgent-important": notes.filter(
+    "not-urgent-important": filteredNotes.filter(
       (n) => n.priority === "not-urgent-important",
     ),
 
-    "urgent-not-important": notes.filter(
+    "urgent-not-important": filteredNotes.filter(
       (n) => n.priority === "urgent-not-important",
     ),
 
-    "not-urgent-not-important": notes.filter(
+    "not-urgent-not-important": filteredNotes.filter(
       (n) => n.priority === "not-urgent-not-important",
     ),
+  };
+
+  const getDeadlineStatus = (deadline) => {
+    if (!deadline) return null;
+
+    const today = new Date();
+    const dueDate = new Date(deadline);
+
+    // reset jam
+    today.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+
+    const diffTime = dueDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return {
+        text: "Overdue",
+        color: "bg-red-500/20 text-red-300 border border-red-500/30",
+      };
+    }
+
+    if (diffDays === 0) {
+      return {
+        text: "Due Today",
+        color: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
+      };
+    }
+
+    return {
+      text: `${diffDays} day${diffDays > 1 ? "s" : ""} left`,
+      color: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
+    };
   };
 
   return (
@@ -116,6 +160,26 @@ export default function EisenhowerPage() {
           >
             + Add Note
           </button>
+
+          <div className="mt-6">
+            <input
+              type="text"
+              placeholder="Search notes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="
+      w-full
+      p-3
+      rounded-xl
+      bg-white/10
+      border border-white/10
+      backdrop-blur-md
+      text-white
+      placeholder-gray-400
+      focus:outline-none
+    "
+            />
+          </div>
         </div>
       </div>
 
@@ -195,6 +259,7 @@ export default function EisenhowerPage() {
           items={grouped["urgent-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          getDeadlineStatus={getDeadlineStatus}
           color="from-red-500/20 to-pink-500/20"
         />
 
@@ -204,6 +269,7 @@ export default function EisenhowerPage() {
           items={grouped["not-urgent-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          getDeadlineStatus={getDeadlineStatus}
           color="from-blue-500/20 to-cyan-500/20"
         />
 
@@ -213,6 +279,7 @@ export default function EisenhowerPage() {
           items={grouped["urgent-not-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          getDeadlineStatus={getDeadlineStatus}
           color="from-yellow-500/20 to-orange-500/20"
         />
 
@@ -222,6 +289,7 @@ export default function EisenhowerPage() {
           items={grouped["not-urgent-not-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          getDeadlineStatus={getDeadlineStatus}
           color="from-gray-500/20 to-slate-500/20"
         />
       </div>
@@ -233,7 +301,15 @@ export default function EisenhowerPage() {
 /* BOX COMPONENT */
 /* ========================= */
 
-function Box({ title, subtitle, items, deleteNote, handleEdit, color }) {
+function Box({
+  title,
+  subtitle,
+  items,
+  deleteNote,
+  handleEdit,
+  getDeadlineStatus,
+  color,
+}) {
   return (
     <div
       className={`
@@ -291,6 +367,17 @@ function Box({ title, subtitle, items, deleteNote, handleEdit, color }) {
                   <p className="text-sm text-gray-300 mt-1">
                     Deadline: {item.deadline}
                   </p>
+
+                  {item.deadline && (
+                    <div
+                      className={`
+      mt-2 inline-block px-3 py-1 rounded-lg text-xs font-medium
+      ${getDeadlineStatus(item.deadline).color}
+    `}
+                    >
+                      {getDeadlineStatus(item.deadline).text}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col items-end gap-2">

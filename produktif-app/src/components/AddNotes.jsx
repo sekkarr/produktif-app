@@ -49,28 +49,21 @@ export default function AddNote({ onClose, onSave, editData }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
-      
       {/* MODAL */}
       <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-md shadow-2xl text-white">
-
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">
             {editData ? "Edit Note" : "Add Note"}
           </h2>
 
-          <button
-            onClick={onClose}
-            className="text-gray-300 hover:text-white"
-          >
+          <button onClick={onClose} className="text-gray-300 hover:text-white">
             ✕
           </button>
         </div>
 
         {/* DATE */}
-        <p className="text-sm text-gray-300 mb-4">
-          Date: {currentDate}
-        </p>
+        <p className="text-sm text-gray-300 mb-4">Date: {currentDate}</p>
 
         {/* TITLE */}
         <input
@@ -99,17 +92,11 @@ export default function AddNote({ onClose, onSave, editData }) {
             onChange={(e) => setPriority(e.target.value)}
             className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-gray-300 focus:outline-none"
           >
-            <option value="urgent-important">
-              Important & Urgent
-            </option>
+            <option value="urgent-important">Important & Urgent</option>
 
-            <option value="not-urgent-important">
-              Important & Not Urgent
-            </option>
+            <option value="not-urgent-important">Important & Not Urgent</option>
 
-            <option value="urgent-not-important">
-              Not Important & Urgent
-            </option>
+            <option value="urgent-not-important">Not Important & Urgent</option>
 
             <option value="not-urgent-not-important">
               Not Important & Not Urgent
@@ -128,7 +115,6 @@ export default function AddNote({ onClose, onSave, editData }) {
 
         {/* BUTTONS */}
         <div className="flex justify-end gap-3">
-
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
@@ -142,7 +128,6 @@ export default function AddNote({ onClose, onSave, editData }) {
           >
             Save
           </button>
-
         </div>
       </div>
     </div>
