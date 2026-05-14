@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -85,11 +86,12 @@ export default function Dashboard() {
     setLastCheckIn(today);
   };
 
-  // ================= UI =================
   return (
     <div className="min-h-screen px-6 py-10 text-white bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#1E1B4B]">
 
       {/* HEADER */}
+   
+         
       <div className="max-w-6xl mx-auto mb-10">
         <h1 className="text-4xl font-bold mb-2">
           Dashboard 📊
@@ -97,7 +99,16 @@ export default function Dashboard() {
         <p className="text-gray-300">
           Your productivity overview from Eisenhower Matrix & Focus System
         </p>
+
+        
       </div>
+
+
+
+
+      
+
+
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 mb-10">

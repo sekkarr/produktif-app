@@ -138,6 +138,7 @@ export default function EisenhowerPage() {
       {/* HEADER */}
       <div className="max-w-7xl mx-auto mb-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+    
           <div>
             <h1 className="text-4xl font-bold mb-2">Eisenhower Matrix</h1>
 

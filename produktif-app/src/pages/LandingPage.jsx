@@ -19,7 +19,7 @@ export default function LandingPage() {
           </a>
 
           <Link
-            to="/focus-mode"
+            to="/fokus-mode"
             className="hover:text-indigo-300 transition"
           >
             Focus Mode
@@ -67,7 +67,7 @@ export default function LandingPage() {
             <div className="flex gap-4">
 
               <Link
-                to="/focus-mode"
+                to="/fokus-mode"
                 className="
                   bg-indigo-600 hover:bg-indigo-700
                   transition
@@ -217,7 +217,7 @@ export default function LandingPage() {
           </p>
 
           <Link
-            to="/focus-mode"
+            to="/login"
             className="
               inline-block
               bg-indigo-600 hover:bg-indigo-700

@@ -1,11 +1,13 @@
 import PomodoroTimer from "../components/PomodoroTimer";
 import LofiPlayer from "../components/LofiPlayer";
 
+
 export default function FokusMode() {
   return (
     <div className="min-h-screen from-gray-50 to-gray-100 px-6 py-10">
 
       {/* HEADER */}
+
       <div className="text-center mb-10">
         <h1 className="text-4xl font-bold tracking-tight text-gray-400">
           Focus Mode

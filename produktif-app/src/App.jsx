@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 
 import LandingPage from "./pages/LandingPage";
@@ -9,9 +9,18 @@ import FokusMode from "./pages/FokusMode";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
+  const location = useLocation();
+
+  // halaman yang TIDAK pakai navbar
+  const hideNavbar =
+    location.pathname === "/" ||
+    location.pathname === "/login";
+
   return (
     <div>
-      <Navbar />
+
+      {/* NAVBAR CONDITIONAL */}
+      {!hideNavbar && <Navbar />}
 
       <Routes>
         {/* PUBLIC */}
