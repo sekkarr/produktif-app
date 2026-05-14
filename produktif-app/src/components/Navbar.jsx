@@ -18,7 +18,6 @@ export default function Navbar() {
 
       <Link to="/fokus-mode">Fokus Mode</Link>
 
-      {/* LOGOUT */}
       <button onClick={handleLogout}>
         Logout
       </button>
