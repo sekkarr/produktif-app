@@ -34,6 +34,7 @@ export default function AddNote({ onClose, onSave, editData }) {
       content,
       priority,
       date: editData?.date || currentDate,
+      isCompleted: editData?.isCompleted || false,
     };
 
     onSave(newNote);

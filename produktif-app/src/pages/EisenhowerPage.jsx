@@ -67,6 +67,16 @@ export default function EisenhowerPage() {
     setConfirmDelete(null);
   };
 
+  const toggleComplete = (id) => {
+  const updatedNotes = notes.map((note) =>
+    note.id === id
+      ? { ...note, isCompleted: !note.isCompleted }
+      : note
+  );
+
+  setNotes(updatedNotes);
+};
+
   const handleEdit = (note) => {
     setEditingNote(note);
     setIsEditing(true);
@@ -260,6 +270,7 @@ export default function EisenhowerPage() {
           items={grouped["urgent-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          toggleComplete={toggleComplete}
           getDeadlineStatus={getDeadlineStatus}
           color="from-red-500/20 to-pink-500/20"
         />
@@ -270,6 +281,7 @@ export default function EisenhowerPage() {
           items={grouped["not-urgent-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          toggleComplete={toggleComplete}
           getDeadlineStatus={getDeadlineStatus}
           color="from-blue-500/20 to-cyan-500/20"
         />
@@ -280,6 +292,7 @@ export default function EisenhowerPage() {
           items={grouped["urgent-not-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          toggleComplete={toggleComplete}
           getDeadlineStatus={getDeadlineStatus}
           color="from-yellow-500/20 to-orange-500/20"
         />
@@ -290,6 +303,7 @@ export default function EisenhowerPage() {
           items={grouped["not-urgent-not-important"]}
           deleteNote={deleteNote}
           handleEdit={handleEdit}
+          toggleComplete={toggleComplete}
           getDeadlineStatus={getDeadlineStatus}
           color="from-gray-500/20 to-slate-500/20"
         />
@@ -309,6 +323,7 @@ function Box({
   deleteNote,
   handleEdit,
   getDeadlineStatus,
+  toggleComplete,
   color,
 }) {
   return (
@@ -395,6 +410,20 @@ function Box({
                   >
                     Edit
                   </button>
+
+                  <button
+  onClick={() => toggleComplete(item.id)}
+  className={`
+    px-3 py-1 rounded-lg text-sm transition
+    ${
+      item.isCompleted
+        ? "bg-green-600 hover:bg-green-700"
+        : "bg-white/10 hover:bg-white/20"
+    }
+  `}
+>
+  {item.isCompleted ? "Completed" : "Mark Done"}
+</button>
 
                   <button
                     onClick={() => deleteNote(item.id)}

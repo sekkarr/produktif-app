@@ -8,7 +8,7 @@ export default function LandingPage() {
       <nav className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
         
         {/* LOGO */}
-        <h1 className="text-2xl font-bold tracking-wide">
+        <h1 className="text-2xl font-bold tracking-wide mt-10">
           FokusIn
         </h1>
 
@@ -28,12 +28,9 @@ export default function LandingPage() {
           <Link
             to="/login"
             className="
-            
-              bg-indigo-600 hover:bg-indigo-700
               transition
-              px-4 py-2
-              rounded-xl
               font-medium
+              text-white
             "
           >
             Login
@@ -75,6 +72,7 @@ export default function LandingPage() {
                   rounded-2xl
                   font-medium
                   shadow-xl
+                  text-white
                 "
               >
                 Start Focusing
@@ -226,6 +224,7 @@ export default function LandingPage() {
               rounded-2xl
               font-medium
               shadow-xl
+              text-white
             "
           >
             Get Started

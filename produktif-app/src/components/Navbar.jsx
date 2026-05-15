@@ -10,7 +10,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
+    <nav style={{ display: "flex", gap: "30px", padding: "30px" }}>
 
       <Link to="/dashboard">Dashboard</Link>
 
