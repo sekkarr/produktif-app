@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -9,19 +9,51 @@ export default function Navbar() {
     navigate("/login");
   };
 
+  const linkClass = ({ isActive }) => `
+    px-4 py-2 rounded-xl
+    transition duration-200
+    hover:bg-white/10
+    ${isActive ? "bg-white/20 backdrop-blur-md" : ""}
+  `;
+
   return (
-    <nav style={{ display: "flex", gap: "30px", padding: "30px" }}>
+    <nav
+      className="
+        fixed top-0 left-0 w-full
+        z-50
 
-      <Link to="/dashboard">Dashboard</Link>
+        flex justify-end gap-5
+        items-center
 
-      <Link to="/eisenhower">Eisenhower</Link>
+        px-6 py-4
 
-      <Link to="/fokus-mode">Fokus Mode</Link>
+        bg-black/30
+        backdrop-blur-md
+        border-b border-white/10
+      "
+    >
+      <NavLink to="/dashboard" className={linkClass}>
+        Dashboard
+      </NavLink>
 
-      <button onClick={handleLogout}>
+      <NavLink to="/eisenhower" className={linkClass}>
+        Eisenhower
+      </NavLink>
+
+      <NavLink to="/fokus-mode" className={linkClass}>
+        Focus Mode
+      </NavLink>
+
+      <button
+        onClick={handleLogout}
+        className="
+          px-4 py-2 rounded-xl
+          hover:bg-red-500/80
+          transition duration-200
+        "
+      >
         Logout
       </button>
-
     </nav>
   );
 }

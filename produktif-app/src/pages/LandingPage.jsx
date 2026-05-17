@@ -3,16 +3,11 @@ import { Link } from "react-router-dom";
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#1E1B4B] text-white">
-      
-      {/* ================= NAVBAR ================= */}
       <nav className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-        
-        {/* LOGO */}
         <h1 className="text-2xl font-bold tracking-wide mt-10">
           FokusIn
         </h1>
 
-        {/* MENU */}
         <div className="flex items-center gap-6 text-sm">
           <a href="#features" className="hover:text-indigo-300 transition">
             Features
@@ -38,7 +33,6 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ================= HERO SECTION ================= */}
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-24">
         
         <div className="grid md:grid-cols-2 gap-10 items-center">
@@ -138,7 +132,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ================= FEATURES ================= */}
+      {/* fitur fitur*/}
       <section
         id="features"
         className="max-w-7xl mx-auto px-6 pb-24"
@@ -192,7 +186,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ================= CTA ================= */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
 
         <div
@@ -233,7 +226,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ================= FOOTER ================= */}
       <footer className="border-t border-white/10 py-6 text-center text-gray-400 text-sm">
         © 2026 FokusIn. All rights reserved.
       </footer>

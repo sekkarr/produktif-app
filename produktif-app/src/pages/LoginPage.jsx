@@ -10,7 +10,7 @@ export default function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // VALIDASI SIMPLE
+    // VALIDASI
     if (!email || !password) {
       alert("Please fill all fields");
       return;

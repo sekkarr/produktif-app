@@ -3,9 +3,13 @@ import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState(0);
 
   const [streak, setStreak] = useState(0);
   const [lastCheckIn, setLastCheckIn] = useState(null);
+
+  const [focusSessions, setFocusSessions] = useState(0);
+  const [focusMinutes, setFocusMinutes] = useState(0);
 
   const today = new Date().toDateString();
 
@@ -13,32 +17,39 @@ export default function Dashboard() {
     const savedNotes = JSON.parse(localStorage.getItem("notes") || "[]");
     setNotes(savedNotes);
 
+    const completed = savedNotes.filter((n) => n.isCompleted).length;
+    setCompletedTasks(completed);
+
     const savedStreak = JSON.parse(localStorage.getItem("streak") || null);
 
     if (savedStreak) {
       setStreak(savedStreak.count || 0);
       setLastCheckIn(savedStreak.lastDate || null);
     }
+
+    setFocusSessions(Number(localStorage.getItem("focusSessions")) || 0);
+
+    setFocusMinutes(Number(localStorage.getItem("focusMinutes")) || 0);
   }, []);
 
-  // ================= EISENHOWER =================
+  //eisenhower matrix
   const urgentImportant = notes.filter(
-    (n) => n.priority === "urgent-important"
+    (n) => n.priority === "urgent-important",
   );
 
   const notUrgentImportant = notes.filter(
-    (n) => n.priority === "not-urgent-important"
+    (n) => n.priority === "not-urgent-important",
   );
 
   const urgentNotImportant = notes.filter(
-    (n) => n.priority === "urgent-not-important"
+    (n) => n.priority === "urgent-not-important",
   );
 
   const notUrgentNotImportant = notes.filter(
-    (n) => n.priority === "not-urgent-not-important"
+    (n) => n.priority === "not-urgent-not-important",
   );
 
-  // ================= SUMMARY =================
+  //summary
   const totalNotes = notes.length;
 
   const overdue = notes.filter((n) => {
@@ -50,12 +61,12 @@ export default function Dashboard() {
   }).length;
 
   const dueTodayList = notes.filter(
-    (n) => n.deadline && new Date(n.deadline).toDateString() === today
+    (n) => n.deadline && new Date(n.deadline).toDateString() === today,
   );
 
   const dueToday = dueTodayList.length;
 
-  // ================= CHECK IN =================
+  //streak
   const handleCheckIn = () => {
     if (lastCheckIn === today) {
       alert("Already checked in today!");
@@ -87,11 +98,18 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen px-6 py-10 text-white bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#1E1B4B]">
-
-      {/* HEADER */}
+    <div className="min-h-screen px-6 py-10 text-white">
       <div className="max-w-6xl mx-auto mb-8">
-        <h1 className="text-4xl font-bold mb-2">Dashboard 📊</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-4xl font-bold">Dashboard</h1>
+
+          <img
+            src="/icon/dashboard.png"
+            alt="Dashboard Icon"
+            className="w-10 h-10"
+          />
+        </div>
+
         <p className="text-gray-300">
           Your productivity overview from Eisenhower Matrix & Focus System
         </p>
@@ -115,27 +133,51 @@ export default function Dashboard() {
       </div>
 
       {/* SUMMARY */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 mb-8">
-
-        <div className="bg-white/10 border border-white/10 rounded-2xl p-6">
-          <p className="text-gray-300">Total Tasks</p>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        {/* CARD */}
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Total Tasks</p>
           <h2 className="text-3xl font-bold mt-2">{totalNotes}</h2>
         </div>
 
-        <div className="bg-white/10 border border-white/10 rounded-2xl p-6">
-          <p className="text-gray-300">Overdue</p>
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Overdue</p>
           <h2 className="text-3xl font-bold mt-2 text-red-400">{overdue}</h2>
         </div>
 
-        <div className="bg-white/10 border border-white/10 rounded-2xl p-6">
-          <p className="text-gray-300">Due Today</p>
-          <h2 className="text-3xl font-bold mt-2 text-yellow-400">{dueToday}</h2>
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Due Today</p>
+          <h2 className="text-3xl font-bold mt-2 text-yellow-400">
+            {dueToday}
+          </h2>
+        </div>
+
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Completed Tasks</p>
+          <h2 className="text-3xl font-bold mt-2 text-green-400">
+            {completedTasks}
+          </h2>
+        </div>
+
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Focus Sessions</p>
+          <h2 className="text-3xl font-bold mt-2 text-indigo-400">
+            {focusSessions}
+          </h2>
+        </div>
+
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg hover:shadow-xl transition transform hover:scale-[1.02] backdrop-blur-md h-full flex flex-col justify-between">
+          <p className="text-gray-300 text-sm">Focus Minutes</p>
+          <h2 className="text-3xl font-bold mt-2 text-green-300">
+            {focusMinutes}
+          </h2>
         </div>
       </div>
 
       {/* TODAY INSIGHT */}
       <div className="max-w-6xl mx-auto mb-6 bg-white/10 border border-white/10 p-5 rounded-2xl">
         <h2 className="text-lg font-semibold mb-2">🎯 Today Insight</h2>
+
         <p className="text-gray-300 text-sm">
           {urgentImportant.length > 0
             ? `You have ${urgentImportant.length} Do Now tasks. Focus on the most urgent one first.`
@@ -165,45 +207,34 @@ export default function Dashboard() {
 
       {/* EISENHOWER + STREAK */}
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 mb-10">
-
         {/* EISENHOWER */}
         <div className="md:col-span-2 grid grid-cols-2 gap-4">
-
           <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
             <p className="text-sm text-gray-300">Do Now</p>
             <h3 className="text-2xl font-bold">{urgentImportant.length}</h3>
-            <p className="text-xs text-gray-400 mt-1">High priority tasks</p>
           </div>
 
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
             <p className="text-sm text-gray-300">Schedule</p>
             <h3 className="text-2xl font-bold">{notUrgentImportant.length}</h3>
-            <p className="text-xs text-gray-400 mt-1">Important but not urgent</p>
           </div>
 
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4">
             <p className="text-sm text-gray-300">Delegate</p>
             <h3 className="text-2xl font-bold">{urgentNotImportant.length}</h3>
-            <p className="text-xs text-gray-400 mt-1">Can be delegated</p>
           </div>
 
           <div className="bg-gray-500/10 border border-gray-500/20 rounded-2xl p-4">
-            <p className="text-sm text-gray-300">Delete</p>
-            <h3 className="text-2xl font-bold">{notUrgentNotImportant.length}</h3>
-            <p className="text-xs text-gray-400 mt-1">Low priority tasks</p>
+            <p className="text-sm text-gray-300">Eliminate</p>
+            <h3 className="text-2xl font-bold">
+              {notUrgentNotImportant.length}
+            </h3>
           </div>
         </div>
 
         {/* STREAK */}
         <div className="bg-white/10 border border-white/10 rounded-2xl p-6 text-center flex flex-col justify-center">
-
           <h2 className="text-lg font-semibold mb-2">🔥 Daily Streak</h2>
-
-          <p className="text-xs text-gray-400 mb-2">
-            {streak >= 3
-              ? "Great consistency 🔥"
-              : "Keep building your habit"}
-          </p>
 
           <h3 className="text-4xl font-bold mb-2">{streak}</h3>
 
@@ -215,12 +246,6 @@ export default function Dashboard() {
           >
             Check In
           </button>
-
-          {lastCheckIn === today && (
-            <p className="text-green-400 mt-3 text-xs">
-              ✓ Already checked in today
-            </p>
-          )}
         </div>
       </div>
 
@@ -228,7 +253,6 @@ export default function Dashboard() {
       <div className="text-center text-gray-400 text-sm">
         Connect your focus, tasks, and habits into one system.
       </div>
-
     </div>
   );
 }

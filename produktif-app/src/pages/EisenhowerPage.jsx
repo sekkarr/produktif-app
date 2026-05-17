@@ -29,6 +29,7 @@ export default function EisenhowerPage() {
     }
   }, [notes, isLoaded]);
 
+  // TOAST AUTO HIDE
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => {
@@ -39,7 +40,7 @@ export default function EisenhowerPage() {
     }
   }, [toast]);
 
-  // ADD NOTE
+  // ADD / EDIT NOTE
   const handleAdd = (newNote) => {
     if (isEditing) {
       const updatedNotes = notes.map((note) =>
@@ -56,6 +57,7 @@ export default function EisenhowerPage() {
       setToast("Note saved successfully!");
     }
   };
+
   // DELETE NOTE
   const deleteNote = (id) => {
     setConfirmDelete(id);
@@ -67,22 +69,23 @@ export default function EisenhowerPage() {
     setConfirmDelete(null);
   };
 
+  // COMPLETE TASK
   const toggleComplete = (id) => {
-  const updatedNotes = notes.map((note) =>
-    note.id === id
-      ? { ...note, isCompleted: !note.isCompleted }
-      : note
-  );
+    const updatedNotes = notes.map((note) =>
+      note.id === id ? { ...note, isCompleted: !note.isCompleted } : note,
+    );
 
-  setNotes(updatedNotes);
-};
+    setNotes(updatedNotes);
+  };
 
+  // EDIT
   const handleEdit = (note) => {
     setEditingNote(note);
     setIsEditing(true);
     setIsModalOpen(true);
   };
 
+  // SEARCH
   const filteredNotes = notes.filter((note) => {
     const keyword = searchTerm.toLowerCase();
 
@@ -91,7 +94,8 @@ export default function EisenhowerPage() {
       note.content.toLowerCase().includes(keyword)
     );
   });
-  // GROUP QUADRANTS
+
+  // GROUP MATRIX
   const grouped = {
     "urgent-important": filteredNotes.filter(
       (n) => n.priority === "urgent-important",
@@ -110,13 +114,13 @@ export default function EisenhowerPage() {
     ),
   };
 
+  // DEADLINE STATUS
   const getDeadlineStatus = (deadline) => {
     if (!deadline) return null;
 
     const today = new Date();
     const dueDate = new Date(deadline);
 
-    // reset jam
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
 
@@ -148,9 +152,16 @@ export default function EisenhowerPage() {
       {/* HEADER */}
       <div className="max-w-7xl mx-auto mb-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-    
           <div>
-            <h1 className="text-4xl font-bold mb-2">Eisenhower Matrix</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-4xl font-bold mb-2">Eisenhower Matrix</h1>
+
+              <img
+                src="/icon/matrix.png"
+                alt="Matrix Icon"
+                className="w-10 h-10 mb-2"
+              />
+            </div>
 
             <p className="text-gray-300">
               Organize tasks based on urgency and importance
@@ -158,28 +169,15 @@ export default function EisenhowerPage() {
           </div>
 
           {/* BUTTON */}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="
-              bg-indigo-600 hover:bg-indigo-700
-              transition
-              px-5 py-3
-              rounded-xl
-              font-medium
-              shadow-lg
-            "
-          >
-            + Add Note
-          </button>
-
-          <div className="mt-6">
+          <div className="flex items-center justify-between gap-4 mt-6">
+            {/* SEARCH */}
             <input
               type="text"
               placeholder="Search notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="
-      w-full
+      flex-1
       p-3
       rounded-xl
       bg-white/10
@@ -190,6 +188,22 @@ export default function EisenhowerPage() {
       focus:outline-none
     "
             />
+
+            {/* ADD NOTE */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="
+      bg-indigo-600 hover:bg-indigo-700
+      transition
+      px-5 py-3
+      rounded-xl
+      font-medium
+      shadow-lg
+      whitespace-nowrap
+    "
+            >
+              + Add Note
+            </button>
           </div>
         </div>
       </div>
@@ -211,6 +225,7 @@ export default function EisenhowerPage() {
         />
       )}
 
+      {/* DELETE MODAL */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-sm text-white shadow-2xl">
@@ -239,30 +254,32 @@ export default function EisenhowerPage() {
         </div>
       )}
 
+      {/* TOAST */}
       {toast && (
         <div
           className="
-      fixed top-5 right-5
-      bg-white/10 backdrop-blur-md
-      border border-white/20
-      text-white
-      px-5 py-3
-      rounded-xl
-      shadow-2xl
-      z-50
-      animate-pulse
-    "
+            fixed top-5 right-5
+            bg-white/10 backdrop-blur-md
+            border border-white/20
+            text-white
+            px-5 py-3
+            rounded-xl
+            shadow-2xl
+            z-50
+            animate-pulse
+          "
         >
           {toast}
         </div>
       )}
+
       {/* GRID */}
       <div
         className="
-        max-w-7xl mx-auto
-        grid grid-cols-1 md:grid-cols-2
-        gap-6
-      "
+          max-w-7xl mx-auto
+          grid grid-cols-1 md:grid-cols-2
+          gap-6
+        "
       >
         <Box
           title="Do Now"
@@ -298,7 +315,7 @@ export default function EisenhowerPage() {
         />
 
         <Box
-          title="Delete"
+          title="Eliminate"
           subtitle="Not Urgent & Not Important"
           items={grouped["not-urgent-not-important"]}
           deleteNote={deleteNote}
@@ -311,10 +328,6 @@ export default function EisenhowerPage() {
     </div>
   );
 }
-
-/* ========================= */
-/* BOX COMPONENT */
-/* ========================= */
 
 function Box({
   title,
@@ -349,12 +362,12 @@ function Box({
       {items.length === 0 ? (
         <div
           className="
-          border border-dashed border-white/10
-          rounded-xl
-          py-10
-          text-center
-          text-gray-400
-        "
+            border border-dashed border-white/10
+            rounded-xl
+            py-10
+            text-center
+            text-gray-400
+          "
         >
           No notes yet
         </div>
@@ -363,79 +376,119 @@ function Box({
           {items.map((item) => (
             <div
               key={item.id}
-              className="
+              className={`
                 bg-white/10
                 border border-white/10
                 backdrop-blur-md
                 rounded-xl
                 p-4
                 shadow-lg
-              "
+                transition
+                ${item.isCompleted ? "opacity-60" : "opacity-100"}
+              `}
             >
-              {/* TITLE */}
               <div className="flex justify-between items-start gap-3">
+                {/* CONTENT */}
                 <div>
-                  <h3 className="font-semibold text-lg">{item.title}</h3>
+                  <h3
+                    className={`
+                      font-semibold text-lg
+                      ${item.isCompleted ? "line-through text-gray-400" : ""}
+                    `}
+                  >
+                    {item.title}
+                  </h3>
 
-                  <h3 className="text-sm  text-lg">{item.content}</h3>
+                  <p
+                    className={`
+                      text-sm mt-1
+                      ${
+                        item.isCompleted
+                          ? "line-through text-gray-500"
+                          : "text-gray-200"
+                      }
+                    `}
+                  >
+                    {item.content}
+                  </p>
 
                   {/* DEADLINE */}
-                  <p className="text-sm text-gray-300 mt-1">
+                  <p className="text-sm text-gray-300 mt-2">
                     Deadline: {item.deadline}
                   </p>
 
                   {item.deadline && (
                     <div
                       className={`
-      mt-2 inline-block px-3 py-1 rounded-lg text-xs font-medium
-      ${getDeadlineStatus(item.deadline).color}
-    `}
+                        mt-2 inline-block px-3 py-1 rounded-lg
+                        text-xs font-medium
+                        ${getDeadlineStatus(item.deadline).color}
+                      `}
                     >
                       {getDeadlineStatus(item.deadline).text}
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
+                {/* ACTION BUTTONS */}
+                <div className="flex flex-col items-end gap-3">
                   <p className="text-xs text-gray-400">{item.date}</p>
+
+                  {/* EDIT + DELETE */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="
+                      p-2 rounded-lg
+                      bg-white/10
+                      hover:bg-blue-500/30
+                      hover:scale-110
+                      transition duration-200
+                    "
+                    >
+                      <img
+                        src="/icon/edit.png"
+                        alt="Edit"
+                        className="w-5 h-5"
+                      />
+                    </button>
+
+                    <button
+                      onClick={() => deleteNote(item.id)}
+                      className="
+                      p-2 rounded-lg
+                      bg-white/10
+                      hover:bg-red-500/30
+                      hover:scale-110
+                      transition duration-200
+                    "
+                    >
+                      <img
+                        src="/icon/delete.png"
+                        alt="Delete"
+                        className="w-5 h-5"
+                      />
+                    </button>
+                  </div>
+
+                  {/* MARK DONE */}
                   <button
-                    onClick={() => handleEdit(item)}
-                    className="
-      bg-blue-500/80 hover:bg-blue-600
-      transition
-      px-3 py-1
+                    onClick={() => toggleComplete(item.id)}
+                    className={`
+      w-full
+      px-3 py-2
       rounded-lg
       text-sm
-    "
+      transition duration-200
+      hover:scale-105
+      ${
+        item.isCompleted
+          ? "bg-green-600 hover:bg-green-700"
+          : "bg-white/10 hover:bg-white/20"
+      }
+    `}
                   >
-                    Edit
-                  </button>
-
-                  <button
-  onClick={() => toggleComplete(item.id)}
-  className={`
-    px-3 py-1 rounded-lg text-sm transition
-    ${
-      item.isCompleted
-        ? "bg-green-600 hover:bg-green-700"
-        : "bg-white/10 hover:bg-white/20"
-    }
-  `}
->
-  {item.isCompleted ? "Completed" : "Mark Done"}
-</button>
-
-                  <button
-                    onClick={() => deleteNote(item.id)}
-                    className="
-                    bg-red-500/80 hover:bg-red-600
-                    transition
-                    px-3 py-1
-                    rounded-lg
-                    text-sm
-                  "
-                  >
-                    Delete
+                    {item.isCompleted ? "Completed" : "Mark as Done"}
                   </button>
                 </div>
               </div>

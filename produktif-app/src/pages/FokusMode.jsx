@@ -6,16 +6,21 @@ export default function FokusMode() {
   return (
     <div className="min-h-screen from-gray-50 to-gray-100 px-6 py-10">
 
-      {/* HEADER */}
-
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-400">
-          Focus Mode
-        </h1>
-        <p className="text-gray-500 mt-2">
-          Pomodoro + Lofi untuk meningkatkan fokus belajar
-        </p>
-      </div>
+  <h1 className="text-4xl font-bold tracking-tight inline-flex items-center justify-center gap-3">
+    Focus Mode
+
+    <img
+      src="/icon/target.png"
+      alt="Target Icon"
+      className="w-8 h-8"
+    />
+  </h1>
+
+  <p className="text-gray-300 mt-2">
+    Stay focused with Pomodoro sessions and lofi music designed for deep work
+  </p>
+</div>
 
       {/* MAIN LAYOUT */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
