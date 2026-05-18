@@ -55,7 +55,7 @@ export default function LandingPage() {
             <div className="flex gap-4">
               <Link
                 to="/fokus-mode"
-                className="bg-indigo-600 hover:bg-indigo-700 transition px-6 py-3 rounded-2xl font-medium shadow-xl"
+                className="bg-indigo-600 hover:bg-indigo-700 transition px-6 py-3 rounded-2xl font-medium shadow-xl text-white"
               >
                 Start Focusing
               </Link>
@@ -143,7 +143,7 @@ export default function LandingPage() {
 
           <Link
             to="/login"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 transition px-8 py-4 rounded-2xl font-medium shadow-xl"
+            className="inline-block bg-indigo-600 hover:bg-indigo-700 transition px-8 py-4 rounded-2xl font-medium shadow-xl text-white"
           >
             Get Started
           </Link>
