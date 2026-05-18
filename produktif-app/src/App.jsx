@@ -17,7 +17,7 @@ function App() {
     location.pathname === "/login";
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-32 md:pt-20">
 
       {/* NAVBAR CONDITIONAL */}
       {!hideNavbar && <Navbar />}

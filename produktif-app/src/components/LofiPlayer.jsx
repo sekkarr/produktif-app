@@ -109,7 +109,11 @@ export default function LofiPlayer() {
             onClick={prevSong}
             className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition"
           >
-            ⏮
+          <img
+    src="/icon/prev.png"
+    alt="Next"
+    className="w-5 h-5"
+  />
           </button>
 
           <button
@@ -120,11 +124,15 @@ export default function LofiPlayer() {
           </button>
 
           <button
-            onClick={nextSong}
-            className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition"
-          >
-            ⏭
-          </button>
+  onClick={nextSong}
+  className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition"
+>
+  <img
+    src="/icon/next.png"
+    alt="Next"
+    className="w-5 h-5"
+  />
+</button>
         </div>
 
         {/* DOT INDICATOR */}

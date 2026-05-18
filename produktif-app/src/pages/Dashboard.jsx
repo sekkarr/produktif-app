@@ -246,6 +246,12 @@ export default function Dashboard() {
           >
             Check In
           </button>
+
+          {lastCheckIn === today && (
+            <p className="text-green-400 mt-3 text-xs">
+              ✓ Already checked in today
+            </p>
+          )}
         </div>
       </div>
 
