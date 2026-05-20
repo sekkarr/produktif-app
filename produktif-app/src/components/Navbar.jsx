@@ -48,7 +48,7 @@ export default function Navbar() {
     </NavLink>
 
     <NavLink to="/eisenhower" className={linkClass}>
-      Eisenhower
+      Task
     </NavLink>
 
     <NavLink to="/fokus-mode" className={linkClass}>
