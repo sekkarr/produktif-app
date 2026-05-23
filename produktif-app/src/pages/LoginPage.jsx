@@ -10,21 +10,39 @@ export default function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // VALIDASI
+    // VALIDASI INPUT KOSONG
     if (!email || !password) {
       alert("Please fill all fields");
       return;
     }
 
-    // SIMPAN LOGIN
-    localStorage.setItem("isLogin", true);
+    // AMBIL DATA USERS DARI LOCALSTORAGE
+    const users =
+      JSON.parse(localStorage.getItem("users")) || [];
 
-    // SIMPAN USER
+    // CEK USER BERDASARKAN EMAIL + PASSWORD
+    const foundUser = users.find(
+      (user) =>
+        user.email === email &&
+        user.password === password
+    );
+
+    // JIKA TIDAK ADA USER YANG COCOK
+    if (!foundUser) {
+      alert("Invalid email or password");
+      return;
+    }
+
+    // SIMPAN STATUS LOGIN
+    localStorage.setItem("isLogin", "true");
+
+    // SIMPAN USER YANG LOGIN
     localStorage.setItem(
       "user",
       JSON.stringify({
-        email,
-      }),
+        id: foundUser.id,
+        email: foundUser.email,
+      })
     );
 
     // PINDAH KE DASHBOARD
@@ -32,39 +50,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="
-        min-h-screen
-        bg-gradient-to-br
-        from-[#0F172A]
-        via-[#111827]
-        to-[#1E1B4B]
-        flex
-        justify-center
-        items-center
-        px-6
-        text-white
-      "
-    >
-      {/* CARD */}
-      <div
-        className="
-          w-full
-          max-w-md
-          bg-white/10
-          border border-white/10
-          backdrop-blur-md
-          rounded-3xl
-          p-8
-          shadow-2xl
-        "
-      >
+    <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#1E1B4B] flex justify-center items-center px-6 text-white">
+
+      <div className="w-full max-w-md bg-white/10 border border-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl">
+
         {/* HEADER */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-3">
             FokusIn
           </h1>
-
           <p className="text-gray-300">
             Welcome back! Stay productive today.
           </p>
@@ -72,7 +66,7 @@ export default function LoginPage() {
 
         {/* FORM */}
         <form onSubmit={handleLogin}>
-          
+
           {/* EMAIL */}
           <div className="mb-5">
             <label className="block mb-2 text-sm text-gray-300">
@@ -84,16 +78,7 @@ export default function LoginPage() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="
-                w-full
-                p-3
-                rounded-xl
-                bg-white/10
-                border border-white/10
-                text-white
-                placeholder-gray-400
-                focus:outline-none
-              "
+              className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400"
             />
           </div>
 
@@ -108,40 +93,22 @@ export default function LoginPage() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="
-                w-full
-                p-3
-                rounded-xl
-                bg-white/10
-                border border-white/10
-                text-white
-                placeholder-gray-400
-                focus:outline-none
-              "
+              className="w-full p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400"
             />
           </div>
 
           {/* BUTTON */}
           <button
             type="submit"
-            className="
-              w-full
-              bg-indigo-600 hover:bg-indigo-700
-              transition
-              py-3
-              rounded-xl
-              font-medium
-              shadow-xl
-            "
+            className="w-full bg-indigo-600 hover:bg-indigo-700 transition py-3 rounded-xl font-medium shadow-xl"
           >
             Login
           </button>
         </form>
 
-        {/* REGISTER */}
+        {/* LINK REGISTER */}
         <p className="text-center text-sm text-gray-400 mt-6">
           Don’t have an account?{" "}
-          
           <Link
             to="/register"
             className="text-indigo-300 hover:text-indigo-200"
@@ -159,6 +126,7 @@ export default function LoginPage() {
             ← Back to Home
           </Link>
         </div>
+
       </div>
     </div>
   );

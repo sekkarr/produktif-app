@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import EisenhowerPage from "./pages/EisenhowerPage";
 import FokusMode from "./pages/FokusMode";
+import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         {/* PUBLIC */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/fokus-mode" element={<FokusMode />} />
 
