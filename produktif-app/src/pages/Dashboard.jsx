@@ -13,6 +13,10 @@ export default function Dashboard() {
 
   const today = new Date().toDateString();
 
+  const [sessionId, setSessionId] = useState(null);
+const [showQR, setShowQR] = useState(false);
+
+
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem("notes") || "[]");
     setNotes(savedNotes);
@@ -97,6 +101,16 @@ export default function Dashboard() {
     setLastCheckIn(today);
   };
 
+  //pairing
+  const handleCreatePair = () => {
+  const id = crypto.randomUUID();
+
+  localStorage.setItem("sessionId", id);
+
+  setSessionId(id);
+  setShowQR(true);
+};
+
   return (
     <div className="min-h-screen px-6 py-10 text-white">
       <div className="max-w-6xl mx-auto mb-8">
@@ -130,7 +144,37 @@ export default function Dashboard() {
         >
           🎯 Start Focus Mode
         </Link>
+
+        <button
+  onClick={handleCreatePair}
+  className="bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl font-medium transition border border-white/10"
+>
+  🔗 Pair Device
+</button>
       </div>
+
+      {/* QR session */}
+      {showQR && sessionId && (
+  <div className="max-w-6xl mx-auto mb-10 bg-white/10 border border-white/10 p-6 rounded-2xl text-center">
+    <h2 className="text-lg font-semibold mb-4">
+      Pair Device
+    </h2>
+
+    <img
+      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${sessionId}`}
+      alt="QR Code"
+      className="mx-auto"
+    />
+
+    <p className="text-sm text-gray-300 mt-3">
+      Scan this QR from your mobile device
+    </p>
+
+    <p className="text-xs text-gray-400 mt-2">
+      Session ID: {sessionId}
+    </p>
+  </div>
+)}
 
       {/* SUMMARY */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

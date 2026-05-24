@@ -8,6 +8,7 @@ import EisenhowerPage from "./pages/EisenhowerPage";
 import FokusMode from "./pages/FokusMode";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
+import PairingScan from "./pages/PairingScan";
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/fokus-mode" element={<FokusMode />} />
+        <Route path="/pairing-scan" element={<PairingScan />} />
 
         {/* PROTECTED */}
         <Route

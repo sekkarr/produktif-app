@@ -115,37 +115,36 @@ export default function EisenhowerPage() {
   };
 
   // DEADLINE STATUS
-  const getDeadlineStatus = (deadline) => {
-    if (!deadline) return null;
+const getDeadlineStatus = (deadline) => {
+  if (!deadline) return null;
 
-    const today = new Date();
-    const dueDate = new Date(deadline);
+  const now = new Date();
+  const dueDate = new Date(deadline);
 
-    today.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
+  const diffMs = dueDate - now;
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-    const diffTime = dueDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return {
-        text: "Overdue",
-        color: "bg-red-500/20 text-red-300 border border-red-500/30",
-      };
-    }
-
-    if (diffDays === 0) {
-      return {
-        text: "Due Today",
-        color: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
-      };
-    }
-
+  if (diffMs < 0) {
     return {
-      text: `${diffDays} day${diffDays > 1 ? "s" : ""} left`,
-      color: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
+      text: "Overdue",
+      color: "bg-red-500/20 text-red-300 border border-red-500/30",
     };
+  }
+
+  if (diffHours <= 24) {
+    return {
+      text: `${diffHours} hours left`,
+      color: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
+    };
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+
+  return {
+    text: `${diffDays} days left`,
+    color: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   };
+};
 
   return (
     <div className="min-h-screen px-6 py-10 text-white">
@@ -413,10 +412,19 @@ function Box({
                   </p>
 
                   {/* DEADLINE */}
-                  <p className="text-sm text-gray-300 mt-2">
-                    Deadline: {item.deadline}
-                  </p>
+                 <p className="text-sm text-gray-300 mt-2">
+  Deadline:
+</p>
 
+<p className="text-sm text-white">
+  {item.deadline?.split("T")[0]}
+</p>
+
+{item.deadline?.includes("T") && (
+  <p className="text-xs text-gray-400">
+    {item.deadline.split("T")[1]}
+  </p>
+)}
                   {item.deadline && (
                     <div
                       className={`

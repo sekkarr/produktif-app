@@ -4,10 +4,12 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("isLogin");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+  localStorage.removeItem("isLogin");
+  localStorage.removeItem("user");
+
+  navigate("/login");
+  window.location.reload();
+};
 
   const linkClass = ({ isActive }) => `
     px-4 py-2 rounded-xl
