@@ -1,5 +1,19 @@
 import { useState, useEffect } from "react";
 import AddNote from "../components/AddNotes";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  where
+} from "firebase/firestore";
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function EisenhowerPage() {
   const [notes, setNotes] = useState([]);
@@ -11,23 +25,43 @@ export default function EisenhowerPage() {
   const [toast, setToast] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // LOAD LOCAL STORAGE
-  useEffect(() => {
-    const saved = localStorage.getItem("notes");
 
-    if (saved) {
-      setNotes(JSON.parse(saved));
-    }
+  const [user, setUser] = useState(null);
+const [loading, setLoading] = useState(true);
 
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (u) => {
+    setUser(u);
+    setLoading(false);
+  });
+
+  return () => unsub();
+}, []);
+
+
+
+  // LOAD data
+useEffect(() => {
+  if (!user) return;
+
+  const q = query(
+    collection(db, "notes"),
+    where("uid", "==", user.uid)
+  );
+
+  const unsub = onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setNotes(data);
     setIsLoaded(true);
-  }, []);
+  });
 
-  // SAVE LOCAL STORAGE
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem("notes", JSON.stringify(notes));
-    }
-  }, [notes, isLoaded]);
+  return () => unsub();
+}, [user]);
+
 
   // TOAST AUTO HIDE
   useEffect(() => {
@@ -41,49 +75,121 @@ export default function EisenhowerPage() {
   }, [toast]);
 
   // ADD / EDIT NOTE
-  const handleAdd = (newNote) => {
-    if (isEditing) {
-      const updatedNotes = notes.map((note) =>
-        note.id === editingNote.id ? { ...note, ...newNote } : note,
+const handleAdd = async (newNote) => {
+  try {
+
+    if (!user) return;
+
+    if (isEditing && editingNote) {
+      const noteRef = doc(db, "notes", editingNote.id);
+
+      await updateDoc(noteRef, {
+        title: newNote.title,
+        content: newNote.content,
+        priority: newNote.priority,
+        deadline: newNote.deadline,
+        isCompleted: newNote.isCompleted,
+        date: newNote.date,
+        uid: user.uid, 
+      });
+
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.id === editingNote.id
+            ? { ...note, ...newNote }
+            : note
+        )
       );
 
-      setNotes(updatedNotes);
       setToast("Note updated successfully!");
 
       setIsEditing(false);
       setEditingNote(null);
     } else {
-      setNotes((prev) => [newNote, ...prev]);
+      const docRef = await addDoc(collection(db, "notes"), {
+        title: newNote.title,
+        content: newNote.content,
+        priority: newNote.priority,
+        deadline: newNote.deadline,
+        isCompleted: false,
+        date: newNote.date,
+        uid: user.uid, 
+      });
+
+      setNotes((prev) => [
+        {
+          ...newNote,
+          id: docRef.id,
+          uid: user.uid,
+        },
+        ...prev,
+      ]);
+
       setToast("Note saved successfully!");
     }
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   // DELETE NOTE
-  const deleteNote = (id) => {
-    setConfirmDelete(id);
-  };
+const deleteNote = (id) => {
+  setConfirmDelete(id);
+};
 
-  const confirmDeleteNote = () => {
-    setNotes(notes.filter((note) => note.id !== confirmDelete));
-    setToast("Note deleted!");
-    setConfirmDelete(null);
-  };
+const confirmDeleteNote = async () => {
+  if (!confirmDelete) return;
 
-  // COMPLETE TASK
-  const toggleComplete = (id) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === id ? { ...note, isCompleted: !note.isCompleted } : note,
+  if (!user) return;
+
+  try {
+    await deleteDoc(doc(db, "notes", confirmDelete));
+
+    setNotes((prev) =>
+      prev.filter((note) => note.id !== confirmDelete)
     );
 
-    setNotes(updatedNotes);
-  };
+    setToast("Note deleted!");
+    setConfirmDelete(null);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  // COMPLETE TASK
+const toggleComplete = async (id) => {
+
+  if (!user) return;
+  const targetNote = notes.find((note) => note.id === id);
+
+  if (!targetNote) return;
+
+  try {
+    await updateDoc(doc(db, "notes", id), {
+      isCompleted: !targetNote.isCompleted,
+    });
+
+    setNotes((prev) =>
+      prev.map((note) =>
+        note.id === id
+          ? {
+              ...note,
+              isCompleted: !note.isCompleted,
+            }
+          : note
+      )
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   // EDIT
-  const handleEdit = (note) => {
-    setEditingNote(note);
-    setIsEditing(true);
-    setIsModalOpen(true);
-  };
+const handleEdit = (note) => {
+  setEditingNote(note); 
+  setIsEditing(true);
+  setIsModalOpen(true);
+};
 
   // SEARCH
   const filteredNotes = notes.filter((note) => {
@@ -146,6 +252,14 @@ const getDeadlineStatus = (deadline) => {
   };
 };
 
+
+  if (loading) {
+    return (
+      <div className="text-white flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen px-6 py-10 text-white">
       {/* HEADER */}

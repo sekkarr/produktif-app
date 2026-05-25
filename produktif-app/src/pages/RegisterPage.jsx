@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -9,55 +11,28 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   
 
-  const handleRegister = (e) => {
-    e.preventDefault();
+const handleRegister = async (e) => {
+  e.preventDefault();
 
-    // Validasi field kosong
-    if (!email || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!email || !password || !confirmPassword) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    // Validasi password
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    // Ambil user yang sudah ada
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
-
-    // Cek email sudah dipakai
-    const existingUser = users.find(
-      (user) => user.email === email
-    );
-
-    if (existingUser) {
-      alert("Email already registered");
-      return;
-    }
-
-    // User baru
-    const newUser = {
-      id: crypto.randomUUID(),
-      email,
-      password,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Simpan
-    users.push(newUser);
-
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
 
     alert("Registration successful!");
-
     navigate("/login");
-  };
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   return (
     <div

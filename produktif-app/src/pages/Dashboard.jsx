@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { db, auth } from "../firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Dashboard() {
+  const [user, setUser] = useState(null);
+const [loading, setLoading] = useState(true);
+
   const [notes, setNotes] = useState([]);
   const [completedTasks, setCompletedTasks] = useState(0);
 
@@ -17,24 +23,36 @@ export default function Dashboard() {
 const [showQR, setShowQR] = useState(false);
 
 
-  useEffect(() => {
-    const savedNotes = JSON.parse(localStorage.getItem("notes") || "[]");
-    setNotes(savedNotes);
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (u) => {
+    setUser(u);
+    setLoading(false);
+  });
 
-    const completed = savedNotes.filter((n) => n.isCompleted).length;
-    setCompletedTasks(completed);
+  return () => unsub();
+}, []);
 
-    const savedStreak = JSON.parse(localStorage.getItem("streak") || null);
+useEffect(() => {
+  if (loading || !user) return;
 
-    if (savedStreak) {
-      setStreak(savedStreak.count || 0);
-      setLastCheckIn(savedStreak.lastDate || null);
-    }
+  const unsub = onSnapshot(collection(db, "notes"), (snapshot) => {
+    const data = snapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((n) => n.uid === user.uid);
 
-    setFocusSessions(Number(localStorage.getItem("focusSessions")) || 0);
+    console.log("USER UID:", user.uid);
+    console.log("DATA FROM FIRESTORE:", data);
 
-    setFocusMinutes(Number(localStorage.getItem("focusMinutes")) || 0);
-  }, []);
+    setNotes(data);
+    setCompletedTasks(data.filter((n) => n.isCompleted).length);
+  });
+
+
+  return () => unsub();
+}, [user]);
 
   //eisenhower matrix
   const urgentImportant = notes.filter(
@@ -110,6 +128,14 @@ const [showQR, setShowQR] = useState(false);
   setSessionId(id);
   setShowQR(true);
 };
+
+if (loading) {
+  return (
+    <div className="text-white flex justify-center items-center h-screen">
+      Loading...
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen px-6 py-10 text-white">

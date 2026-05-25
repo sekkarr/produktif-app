@@ -14,9 +14,10 @@ function App() {
   const location = useLocation();
 
   // halaman yang TIDAK pakai navbar
-  const hideNavbar =
-    location.pathname === "/" ||
-    location.pathname === "/login";
+const hideNavbar =
+  location.pathname === "/" ||
+  location.pathname === "/login" ||
+  location.pathname === "/register";
 
   return (
     <div className="min-h-screen pt-32 md:pt-20">
