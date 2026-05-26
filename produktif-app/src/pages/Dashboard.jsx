@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, doc, setDoc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Dashboard() {
@@ -32,6 +32,21 @@ useEffect(() => {
   return () => unsub();
 }, []);
 
+
+
+
+useEffect(() => {
+  if (!user) return;
+
+  const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
+    if (snap.exists()) {
+      setSessionId(snap.data().pairingId || null);
+    }
+  });
+
+  return () => unsub();
+}, [user]);
+
 useEffect(() => {
   if (loading || !user) return;
 
@@ -43,16 +58,26 @@ useEffect(() => {
       }))
       .filter((n) => n.uid === user.uid);
 
-    console.log("USER UID:", user.uid);
-    console.log("DATA FROM FIRESTORE:", data);
-
     setNotes(data);
     setCompletedTasks(data.filter((n) => n.isCompleted).length);
   });
 
-
   return () => unsub();
-}, [user]);
+}, [user, loading]);
+
+
+useEffect(() => {
+  const saved = localStorage.getItem("streak");
+
+  if (saved) {
+    const data = JSON.parse(saved);
+
+    setStreak(data.count || 0);
+    setLastCheckIn(data.lastDate || null);
+  }
+}, []);
+
+
 
   //eisenhower matrix
   const urgentImportant = notes.filter(
@@ -120,10 +145,23 @@ useEffect(() => {
   };
 
   //pairing
-  const handleCreatePair = () => {
-  const id = crypto.randomUUID();
+const handleCreatePair = async () => {
+  if (!user) return;
 
-  localStorage.setItem("sessionId", id);
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  let id = snap.data()?.pairingId;
+
+  if (!id) {
+    id = crypto.randomUUID();
+
+    await setDoc(
+      userRef,
+      { pairingId: id },
+      { merge: true }
+    );
+  }
 
   setSessionId(id);
   setShowQR(true);
@@ -180,7 +218,7 @@ if (loading) {
       </div>
 
       {/* QR session */}
-      {showQR && sessionId && (
+      { sessionId && (
   <div className="max-w-6xl mx-auto mb-10 bg-white/10 border border-white/10 p-6 rounded-2xl text-center">
     <h2 className="text-lg font-semibold mb-4">
       Pair Device

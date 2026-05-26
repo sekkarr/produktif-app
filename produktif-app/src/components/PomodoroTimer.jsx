@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 export default function PomodoroTimer() {
   const TIMER = {
@@ -6,6 +8,7 @@ export default function PomodoroTimer() {
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   };
+
 
   const [mode, setMode] = useState("focus");
   const [timeLeft, setTimeLeft] = useState(TIMER.focus);
@@ -19,51 +22,56 @@ export default function PomodoroTimer() {
   const radius = 90;
   const circumference = 2 * Math.PI * radius;
 
-  // load local 
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    setSessions(Number(localStorage.getItem("focusSessions")) || 0);
+  setUser(auth.currentUser);
+}, []);
 
-    setFocusMinutes(Number(localStorage.getItem("focusMinutes")) || 0);
-  }, []);
+useEffect(() => {
+  let timer;
 
-  // timer
-  useEffect(() => {
-    let timer;
+  if (isRunning && timeLeft > 0) {
+    timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+  } else if (isRunning && timeLeft === 0) {
+    alarmRef.current?.play();
+    setIsRunning(false);
 
-    if (isRunning && timeLeft > 0) {
-      timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (isRunning && timeLeft === 0) {
-      alarmRef.current?.play();
+    if (mode === "focus") {
+      const updateFirebase = async () => {
+        if (!user) return;
+        const docRef = doc(db, "users", user.uid);
 
-      setIsRunning(false);
+        const newSessions = sessions + 1;
+        const newMinutes = focusMinutes + 25;
 
-      //ganti mode
-      if (mode === "focus") {
-        const newSessions =
-          (Number(localStorage.getItem("focusSessions")) || 0) + 1;
-
-        const newMinutes =
-          (Number(localStorage.getItem("focusMinutes")) || 0) + 25;
-
-        localStorage.setItem("focusSessions", newSessions);
-        localStorage.setItem("focusMinutes", newMinutes);
+        await setDoc(
+          docRef,
+          {
+            focusSessions: newSessions,
+            focusMinutes: newMinutes,
+          },
+          { merge: true }
+        );
 
         setSessions(newSessions);
         setFocusMinutes(newMinutes);
 
-        // switch break
         setMode("shortBreak");
         setTimeLeft(TIMER.shortBreak);
-      } else {
-        setMode("focus");
-        setTimeLeft(TIMER.focus);
-      }
-    }
+      };
 
-    return () => clearInterval(timer);
-  }, [isRunning, timeLeft, mode]);
+      updateFirebase();
+    } else {
+      setMode("focus");
+      setTimeLeft(TIMER.focus);
+    }
+  }
+
+  return () => clearInterval(timer);
+}, [isRunning, timeLeft, mode, user, sessions, focusMinutes]);
 
   const switchMode = (newMode) => {
     setMode(newMode);
