@@ -148,24 +148,22 @@ useEffect(() => {
 const handleCreatePair = async () => {
   if (!user) return;
 
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
+  const docRef = doc(db, "users", user.uid);
+  const snap = await getDoc(docRef);
 
   let id = snap.data()?.pairingId;
 
   if (!id) {
     id = crypto.randomUUID();
 
-    await setDoc(
-      userRef,
-      { pairingId: id },
-      { merge: true }
-    );
+    await setDoc(docRef, {
+      pairingId: id,
+    }, { merge: true });
   }
 
   setSessionId(id);
-  setShowQR(true);
 };
+
 
 if (loading) {
   return (
@@ -174,6 +172,11 @@ if (loading) {
     </div>
   );
 }
+
+
+const qrData = JSON.stringify({
+  sessionId: sessionId,
+});
 
   return (
     <div className="min-h-screen px-6 py-10 text-white">
@@ -218,17 +221,17 @@ if (loading) {
       </div>
 
       {/* QR session */}
-      { sessionId && (
+      { sessionId && qrData &&  (
   <div className="max-w-6xl mx-auto mb-10 bg-white/10 border border-white/10 p-6 rounded-2xl text-center">
     <h2 className="text-lg font-semibold mb-4">
       Pair Device
     </h2>
 
-    <img
-      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${sessionId}`}
-      alt="QR Code"
-      className="mx-auto"
-    />
+   <img
+  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}`}
+  alt="QR Code"
+  className="mx-auto"
+/>
 
     <p className="text-sm text-gray-300 mt-3">
       Scan this QR from your mobile device
