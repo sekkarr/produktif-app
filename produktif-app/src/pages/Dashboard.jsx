@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { collection, onSnapshot, doc, setDoc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, where  } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Dashboard() {
@@ -19,9 +19,6 @@ const [loading, setLoading] = useState(true);
 
   const today = new Date().toDateString();
 
-  const [sessionId, setSessionId] = useState(null);
-const [showQR, setShowQR] = useState(false);
-
 
 useEffect(() => {
   const unsub = onAuthStateChanged(auth, (u) => {
@@ -34,29 +31,19 @@ useEffect(() => {
 
 
 
-
-useEffect(() => {
-  if (!user) return;
-
-  const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
-    if (snap.exists()) {
-      setSessionId(snap.data().pairingId || null);
-    }
-  });
-
-  return () => unsub();
-}, [user]);
-
 useEffect(() => {
   if (loading || !user) return;
 
-  const unsub = onSnapshot(collection(db, "notes"), (snapshot) => {
-    const data = snapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((n) => n.uid === user.uid);
+  const q = query(
+    collection(db, "notes"),
+    where("uid", "==", user.uid)
+  );
+
+  const unsub = onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     setNotes(data);
     setCompletedTasks(data.filter((n) => n.isCompleted).length);
@@ -144,25 +131,7 @@ useEffect(() => {
     setLastCheckIn(today);
   };
 
-  //pairing
-const handleCreatePair = async () => {
-  if (!user) return;
 
-  const docRef = doc(db, "users", user.uid);
-  const snap = await getDoc(docRef);
-
-  let id = snap.data()?.pairingId;
-
-  if (!id) {
-    id = crypto.randomUUID();
-
-    await setDoc(docRef, {
-      pairingId: id,
-    }, { merge: true });
-  }
-
-  setSessionId(id);
-};
 
 
 if (loading) {
@@ -172,11 +141,6 @@ if (loading) {
     </div>
   );
 }
-
-
-const qrData = JSON.stringify({
-  sessionId: sessionId,
-});
 
   return (
     <div className="min-h-screen px-6 py-10 text-white">
@@ -212,36 +176,8 @@ const qrData = JSON.stringify({
           🎯 Start Focus Mode
         </Link>
 
-        <button
-  onClick={handleCreatePair}
-  className="bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl font-medium transition border border-white/10"
->
-  🔗 Pair Device
-</button>
       </div>
-
-      {/* QR session */}
-      { sessionId && qrData &&  (
-  <div className="max-w-6xl mx-auto mb-10 bg-white/10 border border-white/10 p-6 rounded-2xl text-center">
-    <h2 className="text-lg font-semibold mb-4">
-      Pair Device
-    </h2>
-
-   <img
-  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}`}
-  alt="QR Code"
-  className="mx-auto"
-/>
-
-    <p className="text-sm text-gray-300 mt-3">
-      Scan this QR from your mobile device
-    </p>
-
-    <p className="text-xs text-gray-400 mt-2">
-      Session ID: {sessionId}
-    </p>
-  </div>
-)}
+      
 
       {/* SUMMARY */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

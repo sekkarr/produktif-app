@@ -7,7 +7,6 @@ import {
   updateDoc,
   doc,
   deleteDoc,
-  getDocs,
   onSnapshot,
   query,
   where

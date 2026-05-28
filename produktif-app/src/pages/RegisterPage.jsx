@@ -9,30 +9,45 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+  const [popup, setPopup] = useState(null);
 
-const handleRegister = async (e) => {
-  e.preventDefault();
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
-  if (!email || !password || !confirmPassword) {
-    alert("Please fill all fields");
-    return;
-  }
+    if (!email || !password || !confirmPassword) {
+      setPopup({
+        type: "error",
+        message: "Please fill all fields",
+      });
+      return;
+    }
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
+    if (password !== confirmPassword) {
+      setPopup({
+        type: "error",
+        message: "Passwords do not match",
+      });
+      return;
+    }
 
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
 
-    alert("Registration successful!");
-    navigate("/login");
-  } catch (error) {
-    alert(error.message);
-  }
-};
+      setPopup({
+        type: "success",
+        message: "Registration successful!",
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1200);
+    } catch (error) {
+      setPopup({
+        type: "error",
+        message: error.message,
+      });
+    }
+  };
 
   return (
     <div
@@ -62,29 +77,21 @@ const handleRegister = async (e) => {
         "
       >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-3">
-            Create Account
-          </h1>
+          <h1 className="text-4xl font-bold mb-3">Create Account</h1>
 
-          <p className="text-gray-300">
-            Start your productivity journey.
-          </p>
+          <p className="text-gray-300">Start your productivity journey.</p>
         </div>
 
         <form onSubmit={handleRegister}>
           {/* Email */}
           <div className="mb-5">
-            <label className="block mb-2 text-sm text-gray-300">
-              Email
-            </label>
+            <label className="block mb-2 text-sm text-gray-300">Email</label>
 
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
+              onChange={(e) => setEmail(e.target.value)}
               className="
                 w-full
                 p-3
@@ -100,17 +107,13 @@ const handleRegister = async (e) => {
 
           {/* Password */}
           <div className="mb-5">
-            <label className="block mb-2 text-sm text-gray-300">
-              Password
-            </label>
+            <label className="block mb-2 text-sm text-gray-300">Password</label>
 
             <input
               type="password"
               placeholder="Create password"
               value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
+              onChange={(e) => setPassword(e.target.value)}
               className="
                 w-full
                 p-3
@@ -134,9 +137,7 @@ const handleRegister = async (e) => {
               type="password"
               placeholder="Confirm password"
               value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(e.target.value)
-              }
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="
                 w-full
                 p-3
@@ -169,14 +170,34 @@ const handleRegister = async (e) => {
 
         <p className="text-center text-sm text-gray-400 mt-6">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-300 hover:text-indigo-200"
-          >
+          <Link to="/login" className="text-indigo-300 hover:text-indigo-200">
             Login
           </Link>
         </p>
       </div>
+
+      {popup && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-sm text-white shadow-2xl text-center">
+            <h2
+              className={`text-xl font-semibold mb-3 ${
+                popup.type === "success" ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {popup.type === "success" ? "Success" : "Error"}
+            </h2>
+
+            <p className="text-gray-300 text-sm mb-6">{popup.message}</p>
+
+            <button
+              onClick={() => setPopup(null)}
+              className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
