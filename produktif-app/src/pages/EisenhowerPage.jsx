@@ -266,7 +266,7 @@ const getDeadlineStatus = (deadline) => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold mb-2">Eisenhower Matrix</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">Eisenhower Matrix</h1>
 
               <img
                 src="/icon/matrix.png"
@@ -281,7 +281,7 @@ const getDeadlineStatus = (deadline) => {
           </div>
 
           {/* BUTTON */}
-          <div className="flex items-center justify-between gap-4 mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
             {/* SEARCH */}
             <input
               type="text"
@@ -289,30 +289,32 @@ const getDeadlineStatus = (deadline) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="
-      flex-1
-      p-3
-      rounded-xl
-      bg-white/10
-      border border-white/10
-      backdrop-blur-md
-      text-white
-      placeholder-gray-400
-      focus:outline-none
-    "
+w-full
+sm:flex-1
+p-3
+rounded-xl
+bg-white/10
+border border-white/10
+backdrop-blur-md
+text-white
+placeholder-gray-400
+focus:outline-none
+"
             />
 
             {/* ADD NOTE */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="
-      bg-indigo-600 hover:bg-indigo-700
-      transition
-      px-5 py-3
-      rounded-xl
-      font-medium
-      shadow-lg
-      whitespace-nowrap
-    "
+w-full sm:w-auto
+bg-indigo-600 hover:bg-indigo-700
+transition
+px-5 py-3
+rounded-xl
+font-medium
+shadow-lg
+whitespace-nowrap
+"
             >
               + Add Note
             </button>
@@ -340,14 +342,14 @@ const getDeadlineStatus = (deadline) => {
       {/* DELETE MODAL */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-sm text-white shadow-2xl">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 w-full max-w-sm mx-4 text-white shadow-2xl">
             <h2 className="text-xl font-semibold mb-3">Delete Note?</h2>
 
             <p className="text-gray-300 text-sm mb-6">
               This action cannot be undone.
             </p>
 
-            <div className="flex justify-end gap-3">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
               <button
                 onClick={() => setConfirmDelete(null)}
                 className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
@@ -357,7 +359,14 @@ const getDeadlineStatus = (deadline) => {
 
               <button
                 onClick={confirmDeleteNote}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
+                className="
+px-4 py-2
+rounded-lg
+bg-red-600
+hover:bg-red-700
+text-white
+transition
+"
               >
                 Delete
               </button>
@@ -370,7 +379,7 @@ const getDeadlineStatus = (deadline) => {
       {toast && (
         <div
           className="
-            fixed top-5 right-5
+            fixed top-5 right-2 left-2 sm:left-auto sm:right-5
             bg-white/10 backdrop-blur-md
             border border-white/20
             text-white
@@ -499,7 +508,7 @@ function Box({
                 ${item.isCompleted ? "opacity-60" : "opacity-100"}
               `}
             >
-              <div className="flex justify-between items-start gap-3">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
                 {/* CONTENT */}
                 <div>
                   <h3
@@ -552,25 +561,50 @@ function Box({
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <div className="flex flex-col items-end gap-3">
+<div className="flex flex-col items-start sm:items-end gap-3 w-full sm:w-auto">                
                   <p className="text-xs text-gray-400">{item.date}</p>
 
+
+                         {/* MARK DONE */}
+                  <button
+  onClick={() => toggleComplete(item.id)}
+  className={`
+    w-full sm:w-auto
+    px-3 py-2
+    rounded-lg
+    text-sm
+    transition duration-200
+    hover:scale-105
+    ${
+      item.isCompleted
+        ? "bg-green-600 hover:bg-green-700"
+        : "bg-white/10 hover:bg-white/20"
+    }
+  `}
+>
+                    {item.isCompleted ? "Completed" : "Mark as Done"}
+                  </button>
+
                   {/* EDIT + DELETE */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 justify-end">
                     <button
                       onClick={() => handleEdit(item)}
                       className="
-                      p-2 rounded-lg
-                      bg-white/10
-                      hover:bg-blue-500/30
-                      hover:scale-110
-                      transition duration-200
-                    "
+p-2 sm:p-2.5
+min-w-[40px]
+min-h-[40px]
+rounded-lg
+bg-white/10
+hover:bg-blue-500/30
+transition duration-200
+flex items-center justify-center
+shrink-0
+"
                     >
                       <img
                         src="/icon/edit.png"
                         alt="Edit"
-                        className="w-5 h-5"
+                        className="w-5 h-5 object-contain shrink-0"
                       />
                     </button>
 
@@ -587,30 +621,12 @@ function Box({
                       <img
                         src="/icon/delete.png"
                         alt="Delete"
-                        className="w-5 h-5"
+                        className="w-5 h-5 object-contain shrink-0"
                       />
                     </button>
                   </div>
 
-                  {/* MARK DONE */}
-                  <button
-                    onClick={() => toggleComplete(item.id)}
-                    className={`
-      w-full
-      px-3 py-2
-      rounded-lg
-      text-sm
-      transition duration-200
-      hover:scale-105
-      ${
-        item.isCompleted
-          ? "bg-green-600 hover:bg-green-700"
-          : "bg-white/10 hover:bg-white/20"
-      }
-    `}
-                  >
-                    {item.isCompleted ? "Completed" : "Mark as Done"}
-                  </button>
+           
                 </div>
               </div>
             </div>

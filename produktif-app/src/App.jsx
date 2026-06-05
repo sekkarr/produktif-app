@@ -13,7 +13,6 @@ import LoginPage from "./pages/LoginPage";
 function App() {
   const location = useLocation();
 
-  // halaman yang TIDAK pakai navbar
 const hideNavbar =
   location.pathname === "/" ||
   location.pathname === "/login" ||
@@ -22,17 +21,14 @@ const hideNavbar =
   return (
     <div className="min-h-screen pt-32 md:pt-20">
 
-      {/* NAVBAR CONDITIONAL */}
       {!hideNavbar && <Navbar />}
 
       <Routes>
-        {/* PUBLIC */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/fokus-mode" element={<FokusMode />} />
 
-        {/* PROTECTED */}
         <Route
           path="/dashboard"
           element={
