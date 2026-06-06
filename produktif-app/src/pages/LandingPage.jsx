@@ -3,19 +3,20 @@ import { Link } from "react-router-dom";
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#1E1B4B] text-white">
-      
       {/* NAVBAR */}
       <nav className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row md:justify-between items-center gap-3">
-        
         {/* LOGO */}
         <h1 className="flex items-center gap-2 text-2xl md:text-3xl font-bold tracking-wide">
-          <img src="/icon/logo.png" alt="Logo" className="w-6 h-6 md:w-7 md:h-7" />
+          <img
+            src="/icon/logo.png"
+            alt="Logo"
+            className="w-8 h-8 md:w-10 md:h-10"
+          />
           FokusIn
         </h1>
 
         {/* MENU */}
         <div className="flex flex-wrap justify-center md:justify-end items-center gap-4 text-sm">
-          
           <a href="#features" className="hover:text-indigo-300 transition">
             Features
           </a>
@@ -24,18 +25,18 @@ export default function LandingPage() {
             Focus Mode
           </Link>
 
-          <Link to="/login" className="font-medium hover:text-indigo-300 transition">
+          <Link
+            to="/login"
+            className="font-medium hover:text-indigo-300 transition"
+          >
             Login
           </Link>
-
         </div>
       </nav>
 
       {/* HERO SECTION */}
       <section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
-        
         <div className="grid md:grid-cols-2 gap-10 items-center">
-
           {/* LEFT */}
           <div>
             <p className="text-indigo-300 font-medium mb-4">
@@ -43,13 +44,13 @@ export default function LandingPage() {
             </p>
 
             <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Stay Focused &
-              <span className="text-indigo-400"> Organized</span>
+              Stay Focused &<span className="text-indigo-400"> Organized</span>
             </h1>
 
             <p className="text-gray-300 text-lg leading-relaxed mb-8">
-              FokusIn helps you manage focus sessions, organize priorities,
-              and build productive habits through Pomodoro and Eisenhower Matrix methods.
+              FokusIn helps you manage focus sessions, organize priorities, and
+              build productive habits through Pomodoro and Eisenhower Matrix
+              methods.
             </p>
 
             <div className="flex gap-4">
@@ -72,7 +73,6 @@ export default function LandingPage() {
           {/* RIGHT */}
           <div className="flex justify-center">
             <div className="w-full max-w-md bg-white/10 border border-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl">
-              
               <h2 className="text-2xl font-semibold mb-6">
                 Productivity Overview
               </h2>
@@ -93,46 +93,47 @@ export default function LandingPage() {
                   <h3 className="text-3xl font-bold mt-2">5 Days 🔥</h3>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
       </section>
 
       {/* FEATURES */}
       <section id="features" className="max-w-7xl mx-auto px-6 pb-24">
-        
         <div className="text-center mb-14">
           <h2 className="text-4xl font-bold mb-4">Features</h2>
-          <p className="text-gray-300">Tools designed to improve productivity and focus.</p>
+          <p className="text-gray-300">
+            Tools designed to improve productivity and focus.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-
           <div className="bg-white/10 border border-white/10 backdrop-blur-md rounded-3xl p-6">
             <h3 className="text-2xl font-semibold mb-4">🎯 Focus Mode</h3>
-            <p className="text-gray-300">Pomodoro + lofi music untuk fokus maksimal.</p>
+            <p className="text-gray-300">
+              Pomodoro + lofi music untuk fokus maksimal.
+            </p>
           </div>
 
           <div className="bg-white/10 border border-white/10 backdrop-blur-md rounded-3xl p-6">
-            <h3 className="text-2xl font-semibold mb-4">🧠 Eisenhower Matrix</h3>
-            <p className="text-gray-300">Prioritas tugas berdasarkan urgent & important.</p>
+            <h3 className="text-2xl font-semibold mb-4">
+              🧠 Eisenhower Matrix
+            </h3>
+            <p className="text-gray-300">
+              Prioritas tugas berdasarkan urgent & important.
+            </p>
           </div>
 
           <div className="bg-white/10 border border-white/10 backdrop-blur-md rounded-3xl p-6">
             <h3 className="text-2xl font-semibold mb-4">📈 Dashboard</h3>
             <p className="text-gray-300">Pantau progress & streak harianmu.</p>
           </div>
-
         </div>
       </section>
 
       {/* CTA */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
-        
         <div className="bg-indigo-600/20 border border-indigo-500/20 backdrop-blur-md rounded-3xl p-10 text-center">
-
           <h2 className="text-4xl font-bold mb-4">
             Start Building Better Productivity Habits
           </h2>
@@ -147,16 +148,13 @@ export default function LandingPage() {
           >
             Get Started
           </Link>
-
         </div>
-
       </section>
 
       {/* FOOTER */}
       <footer className="border-t border-white/10 py-6 text-center text-gray-400 text-sm">
         © 2026 FokusIn. All rights reserved.
       </footer>
-
     </div>
   );
 }

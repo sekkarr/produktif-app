@@ -9,7 +9,6 @@ export default function PomodoroTimer() {
     longBreak: 15 * 60,
   };
 
-
   const [mode, setMode] = useState("focus");
   const [timeLeft, setTimeLeft] = useState(TIMER.focus);
   const [isRunning, setIsRunning] = useState(false);
@@ -25,53 +24,53 @@ export default function PomodoroTimer() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-  setUser(auth.currentUser);
-}, []);
+    setUser(auth.currentUser);
+  }, []);
 
-useEffect(() => {
-  let timer;
+  useEffect(() => {
+    let timer;
 
-  if (isRunning && timeLeft > 0) {
-    timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-  } else if (isRunning && timeLeft === 0) {
-    alarmRef.current?.play();
-    setIsRunning(false);
+    if (isRunning && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (isRunning && timeLeft === 0) {
+      alarmRef.current?.play();
+      setIsRunning(false);
 
-    if (mode === "focus") {
-      const updateFirebase = async () => {
-        if (!user) return;
-        const docRef = doc(db, "users", user.uid);
+      if (mode === "focus") {
+        const updateFirebase = async () => {
+          if (!user) return;
+          const docRef = doc(db, "users", user.uid);
 
-        const newSessions = sessions + 1;
-        const newMinutes = focusMinutes + 25;
+          const newSessions = sessions + 1;
+          const newMinutes = focusMinutes + 25;
 
-        await setDoc(
-          docRef,
-          {
-            focusSessions: newSessions,
-            focusMinutes: newMinutes,
-          },
-          { merge: true }
-        );
+          await setDoc(
+            docRef,
+            {
+              focusSessions: newSessions,
+              focusMinutes: newMinutes,
+            },
+            { merge: true },
+          );
 
-        setSessions(newSessions);
-        setFocusMinutes(newMinutes);
+          setSessions(newSessions);
+          setFocusMinutes(newMinutes);
 
-        setMode("shortBreak");
-        setTimeLeft(TIMER.shortBreak);
-      };
+          setMode("shortBreak");
+          setTimeLeft(TIMER.shortBreak);
+        };
 
-      updateFirebase();
-    } else {
-      setMode("focus");
-      setTimeLeft(TIMER.focus);
+        updateFirebase();
+      } else {
+        setMode("focus");
+        setTimeLeft(TIMER.focus);
+      }
     }
-  }
 
-  return () => clearInterval(timer);
-}, [isRunning, timeLeft, mode, user, sessions, focusMinutes]);
+    return () => clearInterval(timer);
+  }, [isRunning, timeLeft, mode, user, sessions, focusMinutes]);
 
   const switchMode = (newMode) => {
     setMode(newMode);

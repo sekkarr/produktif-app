@@ -9,7 +9,7 @@ import {
   deleteDoc,
   onSnapshot,
   query,
-  where
+  where,
 } from "firebase/firestore";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -24,171 +24,130 @@ export default function EisenhowerPage() {
   const [toast, setToast] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const [user, setUser] = useState(null);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const unsub = onAuthStateChanged(auth, (u) => {
-    setUser(u);
-    setLoading(false);
-  });
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
 
-  return () => unsub();
-}, []);
-
-
+    return () => unsub();
+  }, []);
 
   // LOAD data
-useEffect(() => {
-  if (!user) return;
+  useEffect(() => {
+    if (!user) return;
 
-  const q = query(
-    collection(db, "notes"),
-    where("uid", "==", user.uid)
-  );
+    const q = query(collection(db, "notes"), where("uid", "==", user.uid));
 
-  const unsub = onSnapshot(q, (snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const unsub = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    setNotes(data);
-    setIsLoaded(true);
-  });
+      setNotes(data);
+      setIsLoaded(true);
+    });
 
-  return () => unsub();
-}, [user]);
-
+    return () => unsub();
+  }, [user]);
 
   // TOAST AUTO HIDE
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => {
         setToast("");
-      }, 3000);
+      }, 7000);
 
       return () => clearTimeout(timer);
     }
   }, [toast]);
 
   // ADD / EDIT NOTE
-const handleAdd = async (newNote) => {
-  try {
+  const handleAdd = async (newNote) => {
+    try {
+      if (!user) return;
+
+      if (isEditing && editingNote) {
+        const noteRef = doc(db, "notes", editingNote.id);
+
+        await updateDoc(noteRef, {
+          title: newNote.title,
+          content: newNote.content,
+          priority: newNote.priority,
+          deadline: newNote.deadline,
+          isCompleted: newNote.isCompleted,
+          date: newNote.date,
+          uid: user.uid,
+        });
+
+        setToast("Note updated successfully!");
+
+        setIsEditing(false);
+        setEditingNote(null);
+      } else {
+        await addDoc(collection(db, "notes"), {
+          title: newNote.title,
+          content: newNote.content,
+          priority: newNote.priority,
+          deadline: newNote.deadline,
+          isCompleted: false,
+          date: newNote.date,
+          uid: user.uid,
+        });
+
+        setToast("Note saved successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // DELETE NOTE
+  const deleteNote = (id) => {
+    setConfirmDelete(id);
+  };
+
+  const confirmDeleteNote = async () => {
+    if (!confirmDelete) return;
 
     if (!user) return;
 
-    if (isEditing && editingNote) {
-      const noteRef = doc(db, "notes", editingNote.id);
+    try {
+      await deleteDoc(doc(db, "notes", confirmDelete));
 
-      await updateDoc(noteRef, {
-        title: newNote.title,
-        content: newNote.content,
-        priority: newNote.priority,
-        deadline: newNote.deadline,
-        isCompleted: newNote.isCompleted,
-        date: newNote.date,
-        uid: user.uid, 
-      });
-
-      setNotes((prev) =>
-        prev.map((note) =>
-          note.id === editingNote.id
-            ? { ...note, ...newNote }
-            : note
-        )
-      );
-
-      setToast("Note updated successfully!");
-
-      setIsEditing(false);
-      setEditingNote(null);
-    } else {
-      const docRef = await addDoc(collection(db, "notes"), {
-        title: newNote.title,
-        content: newNote.content,
-        priority: newNote.priority,
-        deadline: newNote.deadline,
-        isCompleted: false,
-        date: newNote.date,
-        uid: user.uid, 
-      });
-
-      setNotes((prev) => [
-        {
-          ...newNote,
-          id: docRef.id,
-          uid: user.uid,
-        },
-        ...prev,
-      ]);
-
-      setToast("Note saved successfully!");
+      setToast("Note deleted!");
+      setConfirmDelete(null);
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-  // DELETE NOTE
-const deleteNote = (id) => {
-  setConfirmDelete(id);
-};
-
-const confirmDeleteNote = async () => {
-  if (!confirmDelete) return;
-
-  if (!user) return;
-
-  try {
-    await deleteDoc(doc(db, "notes", confirmDelete));
-
-    setNotes((prev) =>
-      prev.filter((note) => note.id !== confirmDelete)
-    );
-
-    setToast("Note deleted!");
-    setConfirmDelete(null);
-  } catch (error) {
-    console.error(error);
-  }
-};
+  };
 
   // COMPLETE TASK
-const toggleComplete = async (id) => {
+  const toggleComplete = async (id) => {
+    if (!user) return;
+    const targetNote = notes.find((note) => note.id === id);
 
-  if (!user) return;
-  const targetNote = notes.find((note) => note.id === id);
+    if (!targetNote) return;
 
-  if (!targetNote) return;
-
-  try {
-    await updateDoc(doc(db, "notes", id), {
-      isCompleted: !targetNote.isCompleted,
-    });
-
-    setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id
-          ? {
-              ...note,
-              isCompleted: !note.isCompleted,
-            }
-          : note
-      )
-    );
-  } catch (error) {
-    console.error(error);
-  }
-};
+    try {
+      await updateDoc(doc(db, "notes", id), {
+        isCompleted: !targetNote.isCompleted,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // EDIT
-const handleEdit = (note) => {
-  setEditingNote(note); 
-  setIsEditing(true);
-  setIsModalOpen(true);
-};
+  const handleEdit = (note) => {
+    setEditingNote(note);
+    setIsEditing(true);
+    setIsModalOpen(true);
+  };
 
   // SEARCH
   const filteredNotes = notes.filter((note) => {
@@ -220,37 +179,36 @@ const handleEdit = (note) => {
   };
 
   // DEADLINE STATUS
-const getDeadlineStatus = (deadline) => {
-  if (!deadline) return null;
+  const getDeadlineStatus = (deadline) => {
+    if (!deadline) return null;
 
-  const now = new Date();
-  const dueDate = new Date(deadline);
+    const now = new Date();
+    const dueDate = new Date(deadline);
 
-  const diffMs = dueDate - now;
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMs = dueDate - now;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-  if (diffMs < 0) {
+    if (diffMs < 0) {
+      return {
+        text: "Overdue",
+        color: "bg-red-500/20 text-red-300 border border-red-500/30",
+      };
+    }
+
+    if (diffHours <= 24) {
+      return {
+        text: `${diffHours} hours left`,
+        color: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
+      };
+    }
+
+    const diffDays = Math.floor(diffHours / 24);
+
     return {
-      text: "Overdue",
-      color: "bg-red-500/20 text-red-300 border border-red-500/30",
+      text: `${diffDays} days left`,
+      color: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
     };
-  }
-
-  if (diffHours <= 24) {
-    return {
-      text: `${diffHours} hours left`,
-      color: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
-    };
-  }
-
-  const diffDays = Math.floor(diffHours / 24);
-
-  return {
-    text: `${diffDays} days left`,
-    color: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   };
-};
-
 
   if (loading) {
     return (
@@ -266,7 +224,9 @@ const getDeadlineStatus = (deadline) => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2">Eisenhower Matrix</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+                Eisenhower Matrix
+              </h1>
 
               <img
                 src="/icon/matrix.png"
@@ -534,19 +494,17 @@ function Box({
                   </p>
 
                   {/* DEADLINE */}
-                 <p className="text-sm text-gray-300 mt-2">
-  Deadline:
-</p>
+                  <p className="text-sm text-gray-300 mt-2">Deadline:</p>
 
-<p className="text-sm text-white">
-  {item.deadline?.split("T")[0]}
-</p>
+                  <p className="text-sm text-white">
+                    {item.deadline?.split("T")[0]}
+                  </p>
 
-{item.deadline?.includes("T") && (
-  <p className="text-xs text-gray-400">
-    {item.deadline.split("T")[1]}
-  </p>
-)}
+                  {item.deadline?.includes("T") && (
+                    <p className="text-xs text-gray-400">
+                      {item.deadline.split("T")[1]}
+                    </p>
+                  )}
                   {item.deadline && (
                     <div
                       className={`
@@ -561,14 +519,13 @@ function Box({
                 </div>
 
                 {/* ACTION BUTTONS */}
-<div className="flex flex-col items-start sm:items-end gap-3 w-full sm:w-auto">                
+                <div className="flex flex-col items-start sm:items-end gap-3 w-full sm:w-auto">
                   <p className="text-xs text-gray-400">{item.date}</p>
 
-
-                         {/* MARK DONE */}
+                  {/* MARK DONE */}
                   <button
-  onClick={() => toggleComplete(item.id)}
-  className={`
+                    onClick={() => toggleComplete(item.id)}
+                    className={`
     w-full sm:w-auto
     px-3 py-2
     rounded-lg
@@ -581,7 +538,7 @@ function Box({
         : "bg-white/10 hover:bg-white/20"
     }
   `}
->
+                  >
                     {item.isCompleted ? "Completed" : "Mark as Done"}
                   </button>
 
@@ -625,8 +582,6 @@ shrink-0
                       />
                     </button>
                   </div>
-
-           
                 </div>
               </div>
             </div>

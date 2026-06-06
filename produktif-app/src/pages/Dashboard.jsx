@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db, auth } from "../firebase";
-import { collection, onSnapshot, query, where  } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const [notes, setNotes] = useState([]);
   const [completedTasks, setCompletedTasks] = useState(0);
@@ -19,52 +19,43 @@ const [loading, setLoading] = useState(true);
 
   const today = new Date().toDateString();
 
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
 
-useEffect(() => {
-  const unsub = onAuthStateChanged(auth, (u) => {
-    setUser(u);
-    setLoading(false);
-  });
+    return () => unsub();
+  }, []);
 
-  return () => unsub();
-}, []);
+  useEffect(() => {
+    if (loading || !user) return;
 
+    const q = query(collection(db, "notes"), where("uid", "==", user.uid));
 
+    const unsub = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-useEffect(() => {
-  if (loading || !user) return;
+      setNotes(data);
+      setCompletedTasks(data.filter((n) => n.isCompleted).length);
+    });
 
-  const q = query(
-    collection(db, "notes"),
-    where("uid", "==", user.uid)
-  );
+    return () => unsub();
+  }, [user, loading]);
 
-  const unsub = onSnapshot(q, (snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+  useEffect(() => {
+    const saved = localStorage.getItem("streak");
 
-    setNotes(data);
-    setCompletedTasks(data.filter((n) => n.isCompleted).length);
-  });
+    if (saved) {
+      const data = JSON.parse(saved);
 
-  return () => unsub();
-}, [user, loading]);
-
-
-useEffect(() => {
-  const saved = localStorage.getItem("streak");
-
-  if (saved) {
-    const data = JSON.parse(saved);
-
-    setStreak(data.count || 0);
-    setLastCheckIn(data.lastDate || null);
-  }
-}, []);
-
-
+      setStreak(data.count || 0);
+      setLastCheckIn(data.lastDate || null);
+    }
+  }, []);
 
   //eisenhower matrix
   const urgentImportant = notes.filter(
@@ -131,16 +122,13 @@ useEffect(() => {
     setLastCheckIn(today);
   };
 
-
-
-
-if (loading) {
-  return (
-    <div className="text-white flex justify-center items-center h-screen">
-      Loading...
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div className="text-white flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-6 py-10 text-white">
@@ -175,9 +163,7 @@ if (loading) {
         >
           🎯 Start Focus Mode
         </Link>
-
       </div>
-      
 
       {/* SUMMARY */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

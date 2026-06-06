@@ -4,63 +4,63 @@ export default function AddNote({ onClose, onSave, editData }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [priority, setPriority] = useState("urgent-important");
-  
-const [deadlineDate, setDeadlineDate] = useState("");
-const [deadlineTime, setDeadlineTime] = useState("");
+
+  const [deadlineDate, setDeadlineDate] = useState("");
+  const [deadlineTime, setDeadlineTime] = useState("");
 
   const currentDate = new Date().toLocaleDateString();
 
   // SYNC DATA SAAT EDIT
   useEffect(() => {
     if (editData) {
-  setTitle(editData.title || "");
-  setContent(editData.content || "");
-  setPriority(editData.priority || "urgent-important");
+      setTitle(editData.title || "");
+      setContent(editData.content || "");
+      setPriority(editData.priority || "urgent-important");
 
-  if (editData.deadline) {
-    const [date, time] = editData.deadline.split("T");
+      if (editData.deadline) {
+        const [date, time] = editData.deadline.split("T");
 
-    setDeadlineDate(date || "");
-    setDeadlineTime(time || "");
-  } else {
-    setDeadlineDate("");
-    setDeadlineTime("");
-  }
-} else {
-  setTitle("");
-  setContent("");
-  setPriority("urgent-important");
-  setDeadlineDate("");
-  setDeadlineTime("");
-}
+        setDeadlineDate(date || "");
+        setDeadlineTime(time || "");
+      } else {
+        setDeadlineDate("");
+        setDeadlineTime("");
+      }
+    } else {
+      setTitle("");
+      setContent("");
+      setPriority("urgent-important");
+      setDeadlineDate("");
+      setDeadlineTime("");
+    }
   }, [editData]);
 
   const handleSave = () => {
     if (!title || !content) return;
 
-const deadline =
-  deadlineDate && deadlineTime
-    ? `${deadlineDate}T${deadlineTime}`
-    : deadlineDate;
+    const deadline =
+      deadlineDate && deadlineTime
+        ? `${deadlineDate}T${deadlineTime}`
+        : deadlineDate;
 
-const newNote = {
-  id: editData?.id || Date.now(),
-  title,
-  deadline,
-  content,
-  priority,
-  date: editData?.date || currentDate,
-  isCompleted: editData?.isCompleted || false,
-};
+    const newNote = {
+      id: editData?.id || Date.now(),
+      title,
+      deadline,
+      content,
+      priority,
+      date: editData?.date || currentDate,
+      isCompleted: editData?.isCompleted || false,
+    };
 
     onSave(newNote);
 
     // reset setelah save
-setTitle("");
-setContent("");
-setPriority("urgent-important");
-setDeadlineDate("");
-setDeadlineTime("");
+    setTitle("");
+    setContent("");
+    setPriority("urgent-important");
+    setDeadlineDate("");
+    setDeadlineTime("");
 
     onClose();
   };
@@ -94,12 +94,12 @@ setDeadlineTime("");
 
         {/* DEADLINE */}
         <p className="text-sm text-gray-300 mb-2">Deadline</p>
-       <input
-  type="date"
-  value={deadlineDate}
-  onChange={(e) => setDeadlineDate(e.target.value)}
-  className="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 text-gray-300 focus:outline-none"
-/>
+        <input
+          type="date"
+          value={deadlineDate}
+          onChange={(e) => setDeadlineDate(e.target.value)}
+          className="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 text-gray-300 focus:outline-none"
+        />
 
         {/* DEADLINE TIME */}
         <p className="text-sm text-gray-300 mb-2">Deadline Time</p>

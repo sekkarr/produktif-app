@@ -1,34 +1,26 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { Routes, Route } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
-import EisenhowerPage from "./pages/EisenhowerPage";
-import FokusMode from "./pages/FokusMode";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 
+import Dashboard from "./pages/Dashboard";
+import EisenhowerPage from "./pages/EisenhowerPage";
+import FokusMode from "./pages/FokusMode";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./layouts/AppLayout";
 
 function App() {
-  const location = useLocation();
-
-const hideNavbar =
-  location.pathname === "/" ||
-  location.pathname === "/login" ||
-  location.pathname === "/register";
-
   return (
-    <div className="min-h-screen pt-32 md:pt-20">
+    <Routes>
+      {/* PUBLIC */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
 
-      {!hideNavbar && <Navbar />}
-
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/fokus-mode" element={<FokusMode />} />
-
+      {/* APP (PROTECTED AREA) */}
+      <Route element={<AppLayout />}>
         <Route
           path="/dashboard"
           element={
@@ -46,8 +38,17 @@ const hideNavbar =
             </ProtectedRoute>
           }
         />
-      </Routes>
-    </div>
+
+        <Route
+          path="/fokus-mode"
+          element={
+            <ProtectedRoute>
+              <FokusMode />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 

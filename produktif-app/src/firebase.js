@@ -2,7 +2,11 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -15,7 +19,7 @@ const firebaseConfig = {
   storageBucket: "produktif-app.firebasestorage.app",
   messagingSenderId: "646693517324",
   appId: "1:646693517324:web:8e2d8a381c0fe23c925629",
-  measurementId: "G-GWDPXPQ15F"
+  measurementId: "G-GWDPXPQ15F",
 };
 
 // init app
